@@ -1,0 +1,21 @@
+{
+  "name": "purescript-http-types",
+  "description": "Data types for dealing with HTTP",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "output"
+  ],
+  "devDependencies": {
+    "purescript-psci-support": "^2.0.0",
+    "purescript-console": "^2.0.0"
+  },
+  "dependencies": {
+    "purescript-prelude": "^2.1.0",
+    "purescript-maps": "^2.0.2",
+    "purescript-maybe": "^2.0.1",
+    "purescript-strings": "^2.0.2",
+    "purescript-lists": "^3.2.2"
+  }
+}
