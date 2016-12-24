@@ -2,6 +2,10 @@
   "name": "purescript-http-types",
   "description": "Data types for dealing with HTTP",
   "license": "BSD-3-Clause",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/chrisdotcode/purescript-http-types.git"
+  },
   "ignore": [
     "**/.*",
     "node_modules",
