@@ -1,6 +1,7 @@
 {
   "name": "purescript-http-types",
   "description": "Data types for dealing with HTTP",
+  "license": "BSD-3-Clause",
   "ignore": [
     "**/.*",
     "node_modules",
