@@ -149,6 +149,7 @@ A list of standard headers. If it's non-standard, use the
 ``` purescript
 Show HeaderName
 Eq HeaderName
+Ord HeaderName
 ```
 
 #### `headerNameFromString`

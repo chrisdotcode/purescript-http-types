@@ -401,6 +401,9 @@ instance showHeaderName :: Show HeaderName where
 instance eqHeaderName :: Eq HeaderName where
 	eq h1 h2 = show h1 == show h2
 
+instance ordHeaderName :: Ord HeaderName where
+	compare h1 h2 = compare (show h1) (show h2)
+
 -- | Creates a 'HeaderName' from a string. If the given string is a
 -- | non-standard HTTP header name, then a 'Custom' 'HeaderName' is
 -- | returned.
