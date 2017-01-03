@@ -20,4 +20,4 @@ Module documentation is
 or available in the [docs directory](docs/):
 - [Network.HTTP.Types.Headers](docs/Network/HTTP/Types/Headers.md)
 - [Network.HTTP.Types.StatusCodes](docs/Network/HTTP/Types/StatusCodes.md)
-- [Network.HTTP.Types.Verbs](docs/Network/HTTP/Types/Verbs.md)
+- [Network.HTTP.Types.Methods](docs/Network/HTTP/Types/Methods.md)
