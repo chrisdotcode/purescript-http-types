@@ -348,6 +348,6 @@ statusCodeFromString :: String -> Maybe StatusCode
 
 Returns a 'StatusCode' if the given string can be coerced into
 one. The expected string format is `Status-Code SP Reason-Phrase`
-(e.g.: '400 Bad Request') (from RFC 2616, section 6.1).
+(e.g.: `'400 Bad Request'`) (from RFC 2616, section 6.1).
 
 
