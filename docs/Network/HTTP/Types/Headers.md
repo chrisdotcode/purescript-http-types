@@ -4,13 +4,14 @@
 
 ``` purescript
 data HeaderValue
-  = HStr String
-  | HList (NonEmptyList String)
+  = HVStr String
+  | HVList (NonEmptyList String)
 ```
 
-A header value is either a string by itself (e.g.:
-`'text/html; charset=UTF-8'`), or a non-empty list of strings
-(e.g.: `['gzip', deflate']`)
+A header value is either a string by itself (e.g.: `'text/html;
+charset=UTF-8'`), or a non-empty list of strings in the case of a
+header that might be included multiple different times (e.g.: the
+`Vary` header with values `['Origin', 'Accept-Encoding']`).
 
 ##### Instances
 ``` purescript
