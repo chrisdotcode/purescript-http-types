@@ -1,6 +1,5 @@
 module Network.HTTP.Types.Headers
-	( HeaderValue(HStr, HList)
-	, HeaderName
+	( HeaderName
 		( AIM
 		, Accept
 		, AcceptAdditions
@@ -125,39 +124,15 @@ module Network.HTTP.Types.Headers
 
 import Prelude
 	( (==)
-	, (<>)
 	, class Eq
 	, class Ord
 	, class Show
-	, Ordering(GT, LT)
 	, compare
 	, show
 	)
 
-import Data.List.NonEmpty (NonEmptyList)
 import Data.Map           (Map)
 import Data.String        (toLower)
-
--- | A header value is either a string by itself (e.g.:
--- | `'text/html; charset=UTF-8'`), or a non-empty list of strings
--- | (e.g.: `['gzip', deflate']`)
-data HeaderValue = HStr String | HList (NonEmptyList String)
-
-instance showHeaderValue :: Show HeaderValue where
-	show (HStr   s) = "HStr " <> s
-	show (HList ss) = "HList (" <> show ss <> ")"
-
-instance eqHeaderValue :: Eq HeaderValue where
-	eq (HStr  s1) (HStr  s2) = s1 == s2
-	eq (HStr   _) (HList  _) = false
-	eq (HList l1) (HList l2) = l1 == l2
-	eq (HList  _) (HStr   _) = false
-
-instance ordHeaderValue :: Ord HeaderValue where
-	compare (HStr  s1) (HStr  s2) = compare s1 s2
-	compare (HStr   _) (HList  _) = LT -- Strings are "less than" Lists.
-	compare (HList l1) (HList l2) = compare l1 l2
-	compare (HList  _) (HStr   _) = GT -- Lists are "greater than" Strings.
 
 -- | A list of standard headers. If it's non-standard, use the
 -- | 'Custom' constructor.
@@ -529,4 +504,4 @@ headerNameFromString s = headerNameFromString' (toLower s)
 		headerNameFromString' _                           = Custom s
 
 -- | A type alias for a group of HTTP headers.
-type Headers = Map HeaderName HeaderValue
+type Headers = Map HeaderName String
