@@ -1,4 +1,4 @@
-## Module Network.HTTP.Types.Methods
+## Module Network.HTTP.Types.Method
 
 #### `Method`
 

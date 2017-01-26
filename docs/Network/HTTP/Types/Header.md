@@ -1,4 +1,4 @@
-## Module Network.HTTP.Types.Headers
+## Module Network.HTTP.Types.Header
 
 #### `HeaderValue`
 

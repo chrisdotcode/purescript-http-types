@@ -1,4 +1,4 @@
-## Module Network.HTTP.Types.StatusCodes
+## Module Network.HTTP.Types.StatusCode
 
 #### `ReasonPhrase`
 
@@ -91,11 +91,15 @@ Ord StatusCode
 status100 :: StatusCode
 ```
 
+Continue
+
 #### `status101`
 
 ``` purescript
 status101 :: StatusCode
 ```
+
+Switching Protocols
 
 #### `status200`
 
@@ -103,11 +107,15 @@ status101 :: StatusCode
 status200 :: StatusCode
 ```
 
+OK
+
 #### `status201`
 
 ``` purescript
 status201 :: StatusCode
 ```
+
+Created
 
 #### `status202`
 
@@ -115,11 +123,15 @@ status201 :: StatusCode
 status202 :: StatusCode
 ```
 
+Accepted
+
 #### `status203`
 
 ``` purescript
 status203 :: StatusCode
 ```
+
+Non-Authoritative Information
 
 #### `status204`
 
@@ -127,11 +139,15 @@ status203 :: StatusCode
 status204 :: StatusCode
 ```
 
+No Content
+
 #### `status205`
 
 ``` purescript
 status205 :: StatusCode
 ```
+
+Reset Content
 
 #### `status206`
 
@@ -139,11 +155,15 @@ status205 :: StatusCode
 status206 :: StatusCode
 ```
 
+Partial Content
+
 #### `status300`
 
 ``` purescript
 status300 :: StatusCode
 ```
+
+Multiple Choices
 
 #### `status301`
 
@@ -151,11 +171,15 @@ status300 :: StatusCode
 status301 :: StatusCode
 ```
 
+Moved Permanently
+
 #### `status302`
 
 ``` purescript
 status302 :: StatusCode
 ```
+
+Found
 
 #### `status303`
 
@@ -163,11 +187,15 @@ status302 :: StatusCode
 status303 :: StatusCode
 ```
 
+See Other
+
 #### `status304`
 
 ``` purescript
 status304 :: StatusCode
 ```
+
+Not Modified
 
 #### `status305`
 
@@ -175,11 +203,15 @@ status304 :: StatusCode
 status305 :: StatusCode
 ```
 
+Use Proxy
+
 #### `status307`
 
 ``` purescript
 status307 :: StatusCode
 ```
+
+Temporary Redirect
 
 #### `status400`
 
@@ -187,11 +219,15 @@ status307 :: StatusCode
 status400 :: StatusCode
 ```
 
+Bad Request
+
 #### `status401`
 
 ``` purescript
 status401 :: StatusCode
 ```
+
+Unauthorized
 
 #### `status402`
 
@@ -199,11 +235,15 @@ status401 :: StatusCode
 status402 :: StatusCode
 ```
 
+Payment Required
+
 #### `status403`
 
 ``` purescript
 status403 :: StatusCode
 ```
+
+Forbidden
 
 #### `status404`
 
@@ -211,11 +251,15 @@ status403 :: StatusCode
 status404 :: StatusCode
 ```
 
+Not Found
+
 #### `status405`
 
 ``` purescript
 status405 :: StatusCode
 ```
+
+Method Not Allowed
 
 #### `status406`
 
@@ -223,11 +267,15 @@ status405 :: StatusCode
 status406 :: StatusCode
 ```
 
+Not Acceptable
+
 #### `status407`
 
 ``` purescript
 status407 :: StatusCode
 ```
+
+Proxy Authentication Required
 
 #### `status408`
 
@@ -235,11 +283,15 @@ status407 :: StatusCode
 status408 :: StatusCode
 ```
 
+Request Timeout
+
 #### `status409`
 
 ``` purescript
 status409 :: StatusCode
 ```
+
+Conflict
 
 #### `status410`
 
@@ -247,11 +299,15 @@ status409 :: StatusCode
 status410 :: StatusCode
 ```
 
+Gone
+
 #### `status411`
 
 ``` purescript
 status411 :: StatusCode
 ```
+
+Length Required
 
 #### `status412`
 
@@ -259,11 +315,15 @@ status411 :: StatusCode
 status412 :: StatusCode
 ```
 
+Precondition Failed
+
 #### `status413`
 
 ``` purescript
 status413 :: StatusCode
 ```
+
+Payload Too Large
 
 #### `status414`
 
@@ -271,11 +331,15 @@ status413 :: StatusCode
 status414 :: StatusCode
 ```
 
+URI Too Long
+
 #### `status415`
 
 ``` purescript
 status415 :: StatusCode
 ```
+
+Unsupported Media Type
 
 #### `status416`
 
@@ -283,11 +347,15 @@ status415 :: StatusCode
 status416 :: StatusCode
 ```
 
+Range Not Satisfiable
+
 #### `status417`
 
 ``` purescript
 status417 :: StatusCode
 ```
+
+Expectation Failed
 
 #### `status426`
 
@@ -295,11 +363,15 @@ status417 :: StatusCode
 status426 :: StatusCode
 ```
 
+Upgrade Required
+
 #### `status500`
 
 ``` purescript
 status500 :: StatusCode
 ```
+
+Internal Server Error
 
 #### `status501`
 
@@ -307,11 +379,15 @@ status500 :: StatusCode
 status501 :: StatusCode
 ```
 
+Not Implemented
+
 #### `status502`
 
 ``` purescript
 status502 :: StatusCode
 ```
+
+Bad Gateway
 
 #### `status503`
 
@@ -319,17 +395,23 @@ status502 :: StatusCode
 status503 :: StatusCode
 ```
 
+Service Unavailable
+
 #### `status504`
 
 ``` purescript
 status504 :: StatusCode
 ```
 
+Gateway Timeout
+
 #### `status505`
 
 ``` purescript
 status505 :: StatusCode
 ```
+
+HTTP Version Not Supported
 
 #### `getRecognizedStatusCodeFromInt`
 

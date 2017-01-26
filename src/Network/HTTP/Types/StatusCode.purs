@@ -281,246 +281,287 @@ setResponsePhrase :: ReasonPhrase -> StatusCode -> StatusCode
 setResponsePhrase reasonPhrase (StatusCode s) =
 	StatusCode s { reasonPhrase = reasonPhrase }
 
+-- | Continue
 status100 :: StatusCode
 status100 = StatusCode
 	{ code        : 100
 	, reasonPhrase: Continue
 	}
 
+-- | Switching Protocols
 status101 :: StatusCode
 status101 = StatusCode
 	{ code        : 101
 	, reasonPhrase: SwitchingProtocols
 	}
 
+-- | OK
 status200 :: StatusCode
 status200 = StatusCode
 	{ code        : 200
 	, reasonPhrase: OK
 	}
 
+-- | Created
 status201 :: StatusCode
 status201 = StatusCode
 	{ code        : 201
 	, reasonPhrase: Created
 	}
 
+-- | Accepted
 status202 :: StatusCode
 status202 = StatusCode
 	{ code        : 202
 	, reasonPhrase: Accepted
 	}
 
+-- | Non-Authoritative Information
 status203 :: StatusCode
 status203 = StatusCode
 	{ code        : 203
 	, reasonPhrase: NonAuthoritativeInformation
 	}
 
+-- | No Content
 status204 :: StatusCode
 status204 = StatusCode
 	{ code        : 204
 	, reasonPhrase: NoContent
 	}
 
+-- | Reset Content
 status205 :: StatusCode
 status205 = StatusCode
 	{ code        : 205
 	, reasonPhrase: ResetContent
 	}
 
+-- | Partial Content
 status206 :: StatusCode
 status206 = StatusCode
 	{ code        : 206
 	, reasonPhrase: PartialContent
 	}
 
+-- | Multiple Choices
 status300 :: StatusCode
 status300 = StatusCode
 	{ code        : 300
 	, reasonPhrase: MultipleChoices
 	}
 
+-- | Moved Permanently
 status301 :: StatusCode
 status301 = StatusCode
 	{ code        : 301
 	, reasonPhrase: MovedPermanently
 	}
 
+-- | Found
 status302 :: StatusCode
 status302 = StatusCode
 	{ code        : 302
 	, reasonPhrase: Found
 	}
 
+-- | See Other
 status303 :: StatusCode
 status303 = StatusCode
 	{ code        : 303
 	, reasonPhrase: SeeOther
 	}
 
+-- | Not Modified
 status304 :: StatusCode
 status304 = StatusCode
 	{ code        : 304
 	, reasonPhrase: NotModified
 	}
 
+-- | Use Proxy
 status305 :: StatusCode
 status305 = StatusCode
 	{ code        : 305
 	, reasonPhrase: UseProxy
 	}
 
+-- | Temporary Redirect
 status307 :: StatusCode
 status307 = StatusCode
 	{ code        : 307
 	, reasonPhrase: TemporaryRedirect
 	}
 
+-- | Bad Request
 status400 :: StatusCode
 status400 = StatusCode
 	{ code        : 400
 	, reasonPhrase: BadRequest
 	}
 
+-- | Unauthorized
 status401 :: StatusCode
 status401 = StatusCode
 	{ code        : 401
 	, reasonPhrase: Unauthorized
 	}
 
+-- | Payment Required
 status402 :: StatusCode
 status402 = StatusCode
 	{ code        : 402
 	, reasonPhrase: PaymentRequired
 	}
 
+-- | Forbidden
 status403 :: StatusCode
 status403 = StatusCode
 	{ code        : 403
 	, reasonPhrase: Forbidden
 	}
 
+-- | Not Found
 status404 :: StatusCode
 status404 = StatusCode
 	{ code        : 404
 	, reasonPhrase: NotFound
 	}
 
+-- | Method Not Allowed
 status405 :: StatusCode
 status405 = StatusCode
 	{ code        : 405
 	, reasonPhrase: MethodNotAllowed
 	}
 
+-- | Not Acceptable
 status406 :: StatusCode
 status406 = StatusCode
 	{ code        : 406
 	, reasonPhrase: NotAcceptable
 	}
 
+-- | Proxy Authentication Required
 status407 :: StatusCode
 status407 = StatusCode
 	{ code        : 407
 	, reasonPhrase: ProxyAuthenticationRequired
 	}
 
+-- | Request Timeout
 status408 :: StatusCode
 status408 = StatusCode
 	{ code        : 408
 	, reasonPhrase: RequestTimeout
 	}
 
+-- | Conflict
 status409 :: StatusCode
 status409 = StatusCode
 	{ code        : 409
 	, reasonPhrase: Conflict
 	}
 
+-- | Gone
 status410 :: StatusCode
 status410 = StatusCode
 	{ code        : 410
 	, reasonPhrase: Gone
 	}
 
+-- | Length Required
 status411 :: StatusCode
 status411 = StatusCode
 	{ code        : 411
 	, reasonPhrase: LengthRequired
 	}
 
+-- | Precondition Failed
 status412 :: StatusCode
 status412 = StatusCode
 	{ code        : 412
 	, reasonPhrase: PreconditionFailed
 	}
 
+-- | Payload Too Large
 status413 :: StatusCode
 status413 = StatusCode
 	{ code        : 413
 	, reasonPhrase: PayloadTooLarge
 	}
 
+-- | URI Too Long
 status414 :: StatusCode
 status414 = StatusCode
 	{ code        : 414
 	, reasonPhrase: URITooLong
 	}
 
+-- | Unsupported Media Type
 status415 :: StatusCode
 status415 = StatusCode
 	{ code        : 415
 	, reasonPhrase: UnsupportedMediaType
 	}
 
+-- | Range Not Satisfiable
 status416 :: StatusCode
 status416 = StatusCode
 	{ code        : 416
 	, reasonPhrase: RangeNotSatisfiable
 	}
 
+-- | Expectation Failed
 status417 :: StatusCode
 status417 = StatusCode
 	{ code        : 417
 	, reasonPhrase: ExpectationFailed
 	}
 
+-- | Upgrade Required
 status426 :: StatusCode
 status426 = StatusCode
 	{ code        : 426
 	, reasonPhrase: UpgradeRequired
 	}
 
+-- | Internal Server Error
 status500 :: StatusCode
 status500 = StatusCode
 	{ code        : 500
 	, reasonPhrase: InternalServerError
 	}
 
+-- | Not Implemented
 status501 :: StatusCode
 status501 = StatusCode
 	{ code        : 501
 	, reasonPhrase: NotImplemented
 	}
 
+-- | Bad Gateway
 status502 :: StatusCode
 status502 = StatusCode
 	{ code        : 502
 	, reasonPhrase: BadGateway
 	}
 
+-- | Service Unavailable
 status503 :: StatusCode
 status503 = StatusCode
 	{ code        : 503
 	, reasonPhrase: ServiceUnavailable
 	}
 
+-- | Gateway Timeout
 status504 :: StatusCode
 status504 = StatusCode
 	{ code        : 504
 	, reasonPhrase: GatewayTimeout
 	}
 
+-- | HTTP Version Not Supported
 status505 :: StatusCode
 status505 = StatusCode
 	{ code        : 505
