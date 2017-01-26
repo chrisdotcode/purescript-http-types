@@ -1,4 +1,4 @@
-module Network.HTTP.Types.Headers
+module Network.HTTP.Types.Header
 	( HeaderValue(HVStr, HVList)
 	, HeaderName
 		( AIM

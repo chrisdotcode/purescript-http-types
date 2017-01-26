@@ -1,4 +1,4 @@
-module Network.HTTP.Types.Methods
+module Network.HTTP.Types.Method
 	( Method
 		( GET
 		, HEAD

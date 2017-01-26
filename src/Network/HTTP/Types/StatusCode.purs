@@ -1,4 +1,4 @@
-module Network.HTTP.Types.StatusCodes
+module Network.HTTP.Types.StatusCode
 	( ReasonPhrase
 		( Continue
 		, SwitchingProtocols
@@ -43,7 +43,7 @@ module Network.HTTP.Types.StatusCodes
 		, HTTPVersionNotSupported
 		, Custom
 		)
-	, StatusCode(..)
+	, StatusCode(StatusCode)
 	, status100
 	, status101
 	, status200
@@ -273,6 +273,13 @@ instance eqStatusCode :: Eq StatusCode where
 instance ordStatusCode :: Ord StatusCode where
 	compare (StatusCode { code: c1 }) (StatusCode { code: c2 }) =
 		compare c1 c2
+
+setCode :: Int -> StatusCode -> StatusCode
+setCode code (StatusCode s) = StatusCode s { code = code }
+
+setResponsePhrase :: ReasonPhrase -> StatusCode -> StatusCode
+setResponsePhrase reasonPhrase (StatusCode s) =
+	StatusCode s { reasonPhrase = reasonPhrase }
 
 status100 :: StatusCode
 status100 = StatusCode
