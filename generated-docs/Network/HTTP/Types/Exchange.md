@@ -374,7 +374,7 @@ setResponseCookies :: List Cookie -> Response -> Response
 #### `fromJSONWith`
 
 ``` purescript
-fromJSONWith :: forall m a e. (MonadError Error m, Show e) => (String -> Either e a) -> Response -> m a
+fromJSONWith :: forall m a e. MonadError Error m => Show e => (String -> Either e a) -> Response -> m a
 ```
 
 Takes a completed 'Response', extracts its string body, and converts that
@@ -384,25 +384,5 @@ conversion fails.
 The given function is expected to take the string body, and return a `Show
 errmsg => Left errmsg` if the conversion fails, or a `Right a` if the
 conversion is successful.
-
-#### `fromJSON`
-
-``` purescript
-fromJSON :: forall m a. (MonadError Error m, IsForeign a) => Response -> m a
-```
-
-Takes a completed 'Response', extracts its json-content string body, and
-converts it to our desired type using its `IsForeign` instance. Throws an
-error if the conversion fails.
-
-#### `fromJSON'`
-
-``` purescript
-fromJSON' :: forall m. MonadError Error m => Response -> m Foreign
-```
-
-Takes a completed 'Response', extracts its json-content string body, and
-converts it to a `Foreign` object. Throws an error if the conversion
-fails.
 
 
