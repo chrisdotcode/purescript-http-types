@@ -45,8 +45,6 @@ module Network.HTTP.Types.Exchange
 	, setResponseBody
 	, setResponseCookies
 	, fromJSONWith
-	, fromJSON
-	, fromJSON'
 	) where
 
 import Prelude
@@ -65,11 +63,8 @@ import Prelude
 
 import Control.Monad.Eff.Exception    (Error, error)
 import Control.Monad.Error.Class      (class MonadError, throwError)
-import Control.Monad.Except           (runExcept)
 import Data.Time.Duration             (Milliseconds)
 import Data.Either                    (Either(Left), either)
-import Data.Foreign                   (Foreign)
-import Data.Foreign.Class             (class IsForeign, readJSON)
 import Data.List                      (List, singleton)
 import Data.Maybe                     (Maybe(Just, Nothing))
 import Data.Monoid                    (mempty)
@@ -364,7 +359,7 @@ setResponseCookies cookies (Response r) = Response r { cookies = cookies }
 -- | The given function is expected to take the string body, and return a `Show
 -- | errmsg => m (Left errmsg)` if the conversion fails, or a `m (Right a)` if
 -- | the conversion is successful (where `m` is our `MonadError Error m`).
-fromJSONWith' :: forall m a e. (MonadError Error m, Show e) =>
+fromJSONWith' :: forall m a e. MonadError Error m => Show e =>
 		(String -> m (Either e a))                  ->
 		Response                                    ->
 		m a
@@ -378,25 +373,8 @@ fromJSONWith' fn (Response r) =
 -- | The given function is expected to take the string body, and return a `Show
 -- | errmsg => Left errmsg` if the conversion fails, or a `Right a` if the
 -- | conversion is successful.
-fromJSONWith :: forall m a e. (MonadError Error m, Show e) =>
+fromJSONWith :: forall m a e. MonadError Error m => Show e =>
 		(String -> Either e a)                     ->
 		Response                                   ->
 		m a
 fromJSONWith fn = fromJSONWith' (pure <<< fn)
-
--- | Takes a completed 'Response', extracts its json-content string body, and
--- | converts it to our desired type using its `IsForeign` instance. Throws an
--- | error if the conversion fails.
---
--- XXX For now, we just take the array of errors we get from `readJSON`, `show`
--- them together, and then throw them as an error message if parsing fails. I
--- might want to revisit how I display/combine these error messages in the
--- future.
-fromJSON :: forall m a. (MonadError Error m, IsForeign a) => Response -> m a
-fromJSON = fromJSONWith (runExcept <<< readJSON)
-
--- | Takes a completed 'Response', extracts its json-content string body, and
--- | converts it to a `Foreign` object. Throws an error if the conversion
--- | fails.
-fromJSON' :: forall m. MonadError Error m => Response -> m Foreign
-fromJSON' = fromJSON

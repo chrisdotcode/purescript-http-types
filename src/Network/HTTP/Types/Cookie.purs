@@ -24,7 +24,6 @@ import Prelude
 	, id
 	, map
 	, const
-	, pure
 	, show
 	)
 
@@ -35,9 +34,12 @@ import Data.Time.Duration           (Milliseconds(Milliseconds))
 import Data.DateTime.Instant        (Instant, instant)
 import Data.JSDate                  (toDateTime)
 import Data.Either                  (Either(Left, Right), either)
-import Data.Foreign                 (Foreign, unsafeFromForeign)
-import Data.Foreign.NullOrUndefined (readNullOrUndefined, unNullOrUndefined)
-import Data.Foreign.Undefined       (readUndefined, unUndefined)
+import Data.Foreign
+	( Foreign
+	, readNullOrUndefined
+	, readUndefined
+	, unsafeFromForeign
+	)
 import Data.List                    (List, intercalate)
 import Data.Maybe                   (Maybe(Just, Nothing), fromMaybe)
 import Data.Path.Pathy
@@ -134,8 +136,8 @@ toCookie (JSCookie c) = Cookie
 		-- This `unsafeFromForeign` here means we're always trusting tough-cookie to parse values properly;
 		-- I think that's a pretty safe assumption.
 		fromUndefined :: forall a. Foreign -> Maybe a
-		fromUndefined       = either (const Nothing) unUndefined <<< runExcept <<< readUndefined (pure <<< unsafeFromForeign)
-		fromNullOrUndefined = either (const Nothing) unNullOrUndefined <<< runExcept <<< readNullOrUndefined (pure <<< unsafeFromForeign)
+		fromUndefined = either (const Nothing) (unsafeFromForeign <$> _) <<< runExcept <<< readUndefined
+		fromNullOrUndefined = either (const Nothing) (unsafeFromForeign <$> _) <<< runExcept <<< readNullOrUndefined
 
 foreign import parseImpl :: String -> JSCookie
 
