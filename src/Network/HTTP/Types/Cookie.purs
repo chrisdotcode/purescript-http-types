@@ -49,8 +49,8 @@ import Data.Path.Pathy
 	, parseAbsFile
 	, rootDir
 	)
-import Data.URI.Host                (Host(NameAddress), parseHost)
-import Data.URI.Path                (URIPath)
+import Data.URI                     (Host(NameAddress), URIPath)
+import Data.URI.Host                (parser)
 import Text.Parsing.StringParser    (runParser)
 
 -- | The cookie object we get back from 'parseImpl'.
@@ -125,7 +125,7 @@ toCookie (JSCookie c) = Cookie
 	, value   : c.value
 	-- XXX If a host can't be parsed, just convert the string domain value into a NameAddress and return it;
 	-- but maybe we should throw here?
-	, domain  : (\d -> either (const $ NameAddress d) id $ runParser parseHost d) <$> fromUndefined c.domain
+	, domain  : (\d -> either (const $ NameAddress d) id $ runParser parser d) <$> fromUndefined c.domain
 	, expires : fromUndefined c.expires >>= toDateTime
 	, httpOnly: fromUndefined c.httpOnly
 	, maxAge  : fromUndefined c.maxAge >>= (Milliseconds >>> instant)
