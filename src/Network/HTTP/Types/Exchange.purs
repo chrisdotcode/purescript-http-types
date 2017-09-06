@@ -70,15 +70,10 @@ import Data.Maybe                     (Maybe(Just, Nothing))
 import Data.Monoid                    (mempty)
 import Data.Path.Pathy                (rootDir)
 import Data.Tuple                     (Tuple(Tuple))
-import Data.URI                       (URI(URI), runParseURI)
-import Data.URI.Authority             (Authority(Authority))
-import Data.URI.Fragment              (Fragment)
-import Data.URI.HierarchicalPart      (HierarchicalPart(HierarchicalPart))
-import Data.URI.Host                  (Host(NameAddress))
-import Data.URI.Path                  (URIPathAbs)
-import Data.URI.Scheme                (URIScheme(URIScheme))
-import Data.URI.Types                 (Port)
-import Data.URI.Query                 (Query(Query))
+import Data.URI                       (Authority(Authority), Fragment, Host(NameAddress)
+	, HierarchicalPart(HierarchicalPart), Port(..), Query(Query), Scheme(Scheme)
+	, URIPathAbs, URI(URI))
+import Data.URI.URI                   (parse)
 import Text.Parsing.StringParser      (ParseError(ParseError))
 
 import Network.HTTP.Types.Cookie     (Cookie)
@@ -131,23 +126,28 @@ instance showResponse :: Show Response where
 		<> " cookies: ("    <> show r.cookies    <> "),"
 		<> " })"
 
--- | A URIScheme set to `http:`.
-http :: URIScheme
-http = URIScheme "http"
+-- | A Scheme set to `http:`.
+http :: Scheme
+http = Scheme "http"
 
--- | A URIScheme set to `https:`.
-https :: URIScheme
-https = URIScheme "https"
+-- | A Scheme set to `https:`.
+https :: Scheme
+https = Scheme "https"
 
 -- | A 'default' base url useful for constructing requests. Equivalent to
 -- | <http://localhost:80/>.
 defURI :: URI
 defURI = URI
 	(Just http)
-	(HierarchicalPart (Just (Authority Nothing
-	[(Tuple (NameAddress "localhost")
-	(Just 80))]))
-	(Just (Left rootDir)))
+	(HierarchicalPart
+		(Just
+			(Authority
+				Nothing
+				[(Tuple (NameAddress "localhost") (Just $ Port 80))]
+			)
+		)
+		(Just (Left rootDir))
+	)
 	Nothing
 	Nothing
 
@@ -155,12 +155,12 @@ defURI = URI
 -- | request that is sent to <http://localhost:80/> with the GET method, no
 -- | headers, cookies, authentication, body or timeout.
 defRequest        ::
-	{ uri     :: URI                          
-	, method  :: Method                    
+	{ uri     :: URI
+	, method  :: Method
 	, headers :: Headers
 	, cookies :: List Cookie
 	, auth    :: Maybe Auth
-	, body    :: String                      
+	, body    :: String
 	, timeout :: Maybe Milliseconds
 	}
 defRequest =
@@ -204,7 +204,7 @@ setUser user (BasicAuth _ p) = BasicAuth (Just user) p
 setPassword :: String -> Auth -> Auth
 setPassword password (BasicAuth u _) = BasicAuth u (Just password)
 
-setProtocol :: URIScheme -> Request -> Request
+setProtocol :: Scheme -> Request -> Request
 setProtocol protocol (Request r@{ uri: (URI uriScheme h q f) }) =
 	Request r { uri = URI (Just protocol) h q f }
 
@@ -272,7 +272,7 @@ uriToRequest' uri = Request defRequest { uri = uri }
 -- | values of 'defRequest', with the URI set to the passed parameter. If the
 -- | uri string could not be parsed, the parsing error is thrown.
 uriToRequest :: forall m. MonadError Error m => String -> m Request
-uriToRequest = runParseURI >>>
+uriToRequest = parse >>>
 	either (extractErrorMessage >>> error >>> throwError)
 	       (uriToRequest' >>> pure)
 	where
@@ -282,7 +282,7 @@ uriToRequest = runParseURI >>>
 -- | values of 'defRequest', with the URI set to the passed parameter. If the
 -- | uri string could not be parsed, `Nothing` is returned.
 uriToRequest'' :: String -> Maybe Request
-uriToRequest'' = runParseURI >>> either (const Nothing) (uriToRequest' >>> pure)
+uriToRequest'' = parse >>> either (const Nothing) (uriToRequest' >>> pure)
 
 -- | Constructs a 'Request' from a uri string. The request has all of the
 -- | values of 'defRequest', with the URI set to the passed parameter, and the
