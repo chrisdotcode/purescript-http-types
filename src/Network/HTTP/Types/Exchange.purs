@@ -95,7 +95,7 @@ newtype Request = Request
 	, headers :: Headers
 	, cookies :: List Cookie
 	, auth    :: Maybe Auth -- ^ If Auth information is provided in both the request.uri and request.auth, the auth in request.auth is preferred.
-	, body    :: String
+	, body    :: Maybe String
 	, timeout :: Maybe Milliseconds
 	}
 
@@ -160,7 +160,7 @@ defRequest        ::
 	, headers :: Headers
 	, cookies :: List Cookie
 	, auth    :: Maybe Auth
-	, body    :: String
+	, body    :: Maybe String
 	, timeout :: Maybe Milliseconds
 	}
 defRequest =
@@ -169,7 +169,7 @@ defRequest =
 	, headers: mempty
 	, cookies: mempty
 	, auth   : Nothing
-	, body   : ""
+	, body   : Nothing
 	, timeout: Nothing
 	}
 
@@ -258,7 +258,7 @@ setAuth :: Auth -> Request -> Request
 setAuth auth (Request r) = Request r { auth = Just auth }
 
 setBody :: String -> Request -> Request
-setBody body (Request r) = Request r { body = body }
+setBody body (Request r) = Request r { body = Just body }
 
 setTimeout :: Milliseconds -> Request -> Request
 setTimeout timeout (Request r) = Request r { timeout = Just timeout }
