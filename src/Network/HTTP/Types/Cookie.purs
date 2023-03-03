@@ -25,9 +25,9 @@ import Data.String.NonEmpty as NES
 import Data.Time.Duration (Milliseconds(Milliseconds))
 import Foreign (Foreign, readNullOrUndefined, readUndefined, unsafeFromForeign)
 import Parsing (runParser)
-import Pathy (Abs, AbsDir, AbsFile, parseAbsDir, parseAbsFile, posixParser, rootDir)
+import Pathy (AbsDir, AbsFile, parseAbsDir, parseAbsFile, posixParser, rootDir)
 import Prelude (class Show, const, identity, map, show, ($), (<$>), (<<<), (<>), (>>=), (>>>))
-import URI (Host(NameAddress), Path)
+import URI (Host(NameAddress))
 import URI.Host (parser)
 import URI.Host.RegName as RegName
 
