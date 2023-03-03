@@ -26,7 +26,19 @@ import Data.Time.Duration (Milliseconds(Milliseconds))
 import Foreign (Foreign, readNullOrUndefined, readUndefined, unsafeFromForeign)
 import Parsing (runParser)
 import Pathy (AbsDir, AbsFile, parseAbsDir, parseAbsFile, posixParser, rootDir)
-import Prelude (class Show, const, identity, map, show, ($), (<$>), (<<<), (<>), (>>=), (>>>))
+import Prelude
+  ( class Show
+  , const
+  , identity
+  , map
+  , show
+  , ($)
+  , (<$>)
+  , (<<<)
+  , (<>)
+  , (>>=)
+  , (>>>)
+  )
 import URI (Host(NameAddress))
 import URI.Host (parser)
 import URI.Host.RegName as RegName
@@ -119,14 +131,18 @@ toCookie (JSCookie c) = Cookie
   , value: c.value
   -- XXX If a host can't be parsed, just convert the string domain value into a NameAddress and return it;
   -- but maybe we should throw here?
-  , domain: (\d -> either (const $ NameAddress $ RegName.fromString d) identity $ runParser (NES.toString d) parser)
-      <$>
-        (fromUndefined c.domain >>= NES.fromString)
+  , domain:
+      ( \d -> either (const $ NameAddress $ RegName.fromString d) identity $
+          runParser (NES.toString d) parser
+      )
+        <$>
+          (fromUndefined c.domain >>= NES.fromString)
   , expires: fromUndefined c.expires >>= toDateTime
   , httpOnly: fromUndefined c.httpOnly
   , maxAge: fromUndefined c.maxAge >>= (Milliseconds >>> instant)
   , path: fromMaybe (Left rootDir) $ fromNullOrUndefined c.path >>= \p ->
-      (Left <$> parseAbsDir posixParser p) <|> (Right <$> parseAbsFile posixParser p)
+      (Left <$> parseAbsDir posixParser p) <|>
+        (Right <$> parseAbsFile posixParser p)
   , secure: fromUndefined c.secure
   }
   where

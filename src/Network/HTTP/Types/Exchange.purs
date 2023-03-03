@@ -67,7 +67,18 @@ import Parsing.Combinators (optionMaybe)
 import Parsing.Combinators.Array (many)
 import Pathy (AbsDir, AbsFile, parseAbsDir, parseAbsFile, posixParser, rootDir)
 import Type.Proxy (Proxy(..))
-import URI (Authority(Authority), Fragment, HierarchicalPart(..), Host(NameAddress), Port, Query, Scheme, URI(URI), UserInfo, HierPath)
+import URI
+  ( Authority(Authority)
+  , Fragment
+  , HierPath
+  , HierarchicalPart(..)
+  , Host(NameAddress)
+  , Port
+  , Query
+  , Scheme
+  , URI(URI)
+  , UserInfo
+  )
 import URI.Host as Host
 import URI.Host.RegName as RegName
 import URI.Path as Path
@@ -83,7 +94,11 @@ instance showAuth :: Show Auth where
   show (BasicAuth user password) =
     "(BasicAuth " <> show user <> " " <> show password <> " )"
 
-type URI' = URI UserInfo (Array (Tuple Host (Maybe Port))) (Maybe (Either AbsDir AbsFile)) HierPath Query Fragment
+type URI' = URI UserInfo (Array (Tuple Host (Maybe Port)))
+  (Maybe (Either AbsDir AbsFile))
+  HierPath
+  Query
+  Fragment
 
 -- | A type that represents an HTTP Request.
 newtype Request = Request
@@ -160,10 +175,16 @@ defURI :: URI'
 defURI = URI
   http
   ( HierarchicalPartAuth
-          ( Authority
-              Nothing
-              [ (Tuple (NameAddress $ RegName.fromString $ nes (Proxy :: _ "localhost")) (Just $ Port.unsafeFromInt 80)) ]
-          )
+      ( Authority
+          Nothing
+          [ ( Tuple
+                ( NameAddress $ RegName.fromString $ nes
+                    (Proxy :: _ "localhost")
+                )
+                (Just $ Port.unsafeFromInt 80)
+            )
+          ]
+      )
       (Just (Left rootDir))
   )
   Nothing
@@ -254,7 +275,8 @@ setPort
     }
 setPort _ r = r
 
-modifyPath :: (Either AbsDir AbsFile -> Either AbsDir AbsFile) -> Request -> Request
+modifyPath
+  :: (Either AbsDir AbsFile -> Either AbsDir AbsFile) -> Request -> Request
 modifyPath fn (Request r@{ uri: (URI s (HierarchicalPartAuth a (Just u)) q f) }) =
   Request r { uri = URI s (HierarchicalPartAuth a (Just $ fn u)) q f }
 modifyPath _ r = r
@@ -310,7 +332,10 @@ uriParser =
     { parseFragment: pure
     , parseHierPath: pure
     , parseHosts: many $ Tuple <$> Host.parser <*> optionMaybe Port.parser
-    , parsePath: (\p -> pure $ (Left <$> parseAbsDir posixParser p) <|> (Right <$> parseAbsFile posixParser p)) <<< Path.print
+    , parsePath:
+        ( \p -> pure $ (Left <$> parseAbsDir posixParser p) <|>
+            (Right <$> parseAbsFile posixParser p)
+        ) <<< Path.print
     , parseQuery: pure
     , parseUserInfo: pure
     }
@@ -327,7 +352,8 @@ uriToRequest = flip runParser uriParser >>>
 -- | values of 'defRequest', with the URI set to the passed parameter. If the
 -- | uri string could not be parsed, `Nothing` is returned.
 uriToRequest'' :: String -> Maybe Request
-uriToRequest'' = flip runParser uriParser >>> either (const Nothing) (uriToRequest' >>> pure)
+uriToRequest'' = flip runParser uriParser >>> either (const Nothing)
+  (uriToRequest' >>> pure)
 
 -- | Constructs a 'Request' from a uri string. The request has all of the
 -- | values of 'defRequest', with the URI set to the passed parameter, and the
