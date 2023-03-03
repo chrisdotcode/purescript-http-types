@@ -9,8 +9,6 @@ module Network.HTTP.Types.Exchange
   , defRequest
   , defRequest'
   , makeQuery
-  -- , makeQuery' -- BREAKING: Use `URI.Query.fromString` instead.
-  -- , joinQuery -- BREAKING: Use `Monoid Query` instance instead.
   , basicAuth
   , setUser
   , setPassword
