@@ -1,98 +1,113 @@
 module Network.HTTP.Types.Cookie
-	( Cookie(Cookie)
-	, setName
-	, setValue
-	, setDomain
-	, setExpires
-	, setHttpOnly
-	, setMaxAge
-	, setPath
-	, setSecure
-	, parse
-	, stringify
-	, stringify'
-	) where
+  ( Cookie(Cookie)
+  , setName
+  , setValue
+  , setDomain
+  , setExpires
+  , setHttpOnly
+  , setMaxAge
+  , setPath
+  , setSecure
+  , parse
+  , stringify
+  , stringify'
+  ) where
 
+import Control.Alt ((<|>))
+import Control.Monad.Except (runExcept)
+import Data.DateTime (DateTime)
+import Data.DateTime.Instant (Instant, instant)
+import Data.Either (Either(Left, Right), either)
+import Data.JSDate (toDateTime)
+import Data.List (List, intercalate)
+import Data.Maybe (Maybe(Just, Nothing), fromMaybe)
+import Data.Time.Duration (Milliseconds(Milliseconds))
+import Foreign
+  ( Foreign
+  , readNullOrUndefined
+  , readUndefined
+  , unsafeFromForeign
+  )
+import Pathy
+  ( Abs
+  , AbsDir
+  , parseAbsDir
+  , parseAbsFile
+  , rootDir
+  )
 import Prelude
-	( ($)
-	, (<>)
-	, (<$>)
-	, (<<<)
-	, (>>>)
-	, (>>=)
-	, class Show
-	, id
-	, map
-	, const
-	, show
-	)
-
-import Control.Alt                  ((<|>))
-import Control.Monad.Except         (runExcept)
-import Data.DateTime                (DateTime)
-import Data.Time.Duration           (Milliseconds(Milliseconds))
-import Data.DateTime.Instant        (Instant, instant)
-import Data.JSDate                  (toDateTime)
-import Data.Either                  (Either(Left, Right), either)
-import Data.Foreign
-	( Foreign
-	, readNullOrUndefined
-	, readUndefined
-	, unsafeFromForeign
-	)
-import Data.List                    (List, intercalate)
-import Data.Maybe                   (Maybe(Just, Nothing), fromMaybe)
-import Data.Path.Pathy
-	( Abs
-	, Unsandboxed
-	, parseAbsDir
-	, parseAbsFile
-	, rootDir
-	)
-import Data.URI                     (Host(NameAddress), URIPath)
-import Data.URI.Host                (parser)
-import Text.Parsing.StringParser    (runParser)
+  ( class Show
+  , const
+  , identity
+  , map
+  , show
+  , ($)
+  , (<$>)
+  , (<<<)
+  , (<>)
+  , (>>=)
+  , (>>>)
+  )
+import StringParser (runParser)
+import URI (Host(NameAddress), Path)
+import URI.Host (parser)
 
 -- | The cookie object we get back from 'parseImpl'.
 newtype JSCookie = JSCookie
-	{ key      :: String
-	, value    :: String
-	-- You would expect the following fields to have the types that are
-	-- commented on them, however those are what the PureScript
-	-- representation of the type would be. Since JS has no types, we
-	-- represent them as whatever JS gives back, which is `Undefined|a`,
-	-- a.k.a., `Foreign`.
-	, domain   :: Foreign -- ^ Undefined String
-	, expires  :: Foreign -- ^ Undefined JSDate
-	, httpOnly :: Foreign -- ^ Undefined Boolean
-	, maxAge   :: Foreign -- ^ Undefined Number
-	, path     :: Foreign -- ^ Undefined String
-	, secure   :: Foreign -- ^ Undefined Boolean
-	}
+  { key :: String
+  , value :: String
+  -- You would expect the following fields to have the types that are
+  -- commented on them, however those are what the PureScript
+  -- representation of the type would be. Since JS has no types, we
+  -- represent them as whatever JS gives back, which is `Undefined|a`,
+  -- a.k.a., `Foreign`.
+  , domain :: Foreign -- ^ Undefined String
+  , expires :: Foreign -- ^ Undefined JSDate
+  , httpOnly :: Foreign -- ^ Undefined Boolean
+  , maxAge :: Foreign -- ^ Undefined Number
+  , path :: Foreign -- ^ Undefined String
+  , secure :: Foreign -- ^ Undefined Boolean
+  }
 
 -- | An type that represents an HTTP Cookie.
 newtype Cookie = Cookie
-	{ name     :: String
-	, value    :: String
-	, domain   :: Maybe Host
-	, expires  :: Maybe DateTime
-	, httpOnly :: Maybe Boolean
-	, maxAge   :: Maybe Instant
-	, path     :: URIPath Abs Unsandboxed
-	, secure   :: Maybe Boolean
-	}
+  { name :: String
+  , value :: String
+  , domain :: Maybe Host
+  , expires :: Maybe DateTime
+  , httpOnly :: Maybe Boolean
+  , maxAge :: Maybe Instant
+  , path :: AbsDir
+  , secure :: Maybe Boolean
+  }
 
 instance showCookie :: Show Cookie where
-	show (Cookie c) = "(Cookie {"
-		<> " name:"       <> show c.name     <> ","
-		<> " value:"      <> show c.value    <> ","
-		<> " domain: ("   <> show c.domain   <> "),"
-		<> " expires: ("  <> show c.expires  <> "),"
-		<> " httpOnly: (" <> show c.httpOnly <> "),"
-		<> " maxAge: ("   <> show c.maxAge   <> "),"
-		<> " path: ("     <> show c.path     <> "),"
-		<> " secure: ("   <> show c.secure   <> "),"
-		<> " })"
+  show (Cookie c) = "(Cookie {"
+    <> " name:"
+    <> show c.name
+    <> ","
+    <> " value:"
+    <> show c.value
+    <> ","
+    <> " domain: ("
+    <> show c.domain
+    <> "),"
+    <> " expires: ("
+    <> show c.expires
+    <> "),"
+    <> " httpOnly: ("
+    <> show c.httpOnly
+    <> "),"
+    <> " maxAge: ("
+    <> show c.maxAge
+    <> "),"
+    <> " path: ("
+    <> show c.path
+    <> "),"
+    <> " secure: ("
+    <> show c.secure
+    <> "),"
+    <> " })"
 
 setName :: String -> Cookie -> Cookie
 setName name (Cookie c) = Cookie c { name = name }
@@ -112,7 +127,7 @@ setHttpOnly httpOnly (Cookie c) = Cookie c { httpOnly = Just httpOnly }
 setMaxAge :: Instant -> Cookie -> Cookie
 setMaxAge maxAge (Cookie c) = Cookie c { maxAge = Just maxAge }
 
-setPath :: URIPath Abs Unsandboxed -> Cookie -> Cookie
+setPath :: AbsDir -> Cookie -> Cookie
 setPath path (Cookie c) = Cookie c { path = path }
 
 setSecure :: Boolean -> Cookie -> Cookie
@@ -121,23 +136,29 @@ setSecure secure (Cookie c) = Cookie c { secure = Just secure }
 -- | Converts a 'JSCookie' to a PureScript 'Cookie'.
 toCookie :: JSCookie -> Cookie
 toCookie (JSCookie c) = Cookie
-	{ name    : c.key
-	, value   : c.value
-	-- XXX If a host can't be parsed, just convert the string domain value into a NameAddress and return it;
-	-- but maybe we should throw here?
-	, domain  : (\d -> either (const $ NameAddress d) id $ runParser parser d) <$> fromUndefined c.domain
-	, expires : fromUndefined c.expires >>= toDateTime
-	, httpOnly: fromUndefined c.httpOnly
-	, maxAge  : fromUndefined c.maxAge >>= (Milliseconds >>> instant)
-	, path    : fromMaybe (Left rootDir) $ fromNullOrUndefined c.path >>= \p -> (Left <$> parseAbsDir p) <|> (Right <$> parseAbsFile p)
-	, secure  : fromUndefined c.secure
-	}
-	where
-		-- This `unsafeFromForeign` here means we're always trusting tough-cookie to parse values properly;
-		-- I think that's a pretty safe assumption.
-		fromUndefined :: forall a. Foreign -> Maybe a
-		fromUndefined = either (const Nothing) (unsafeFromForeign <$> _) <<< runExcept <<< readUndefined
-		fromNullOrUndefined = either (const Nothing) (unsafeFromForeign <$> _) <<< runExcept <<< readNullOrUndefined
+  { name: c.key
+  , value: c.value
+  -- XXX If a host can't be parsed, just convert the string domain value into a NameAddress and return it;
+  -- but maybe we should throw here?
+  , domain: (\d -> either (const $ NameAddress d) identity $ runParser parser d)
+      <$>
+        fromUndefined c.domain
+  , expires: fromUndefined c.expires >>= toDateTime
+  , httpOnly: fromUndefined c.httpOnly
+  , maxAge: fromUndefined c.maxAge >>= (Milliseconds >>> instant)
+  , path: fromMaybe (Left rootDir) $ fromNullOrUndefined c.path >>= \p ->
+      (Left <$> parseAbsDir p) <|> (Right <$> parseAbsFile p)
+  , secure: fromUndefined c.secure
+  }
+  where
+  -- This `unsafeFromForeign` here means we're always trusting tough-cookie to parse values properly;
+  -- I think that's a pretty safe assumption.
+  fromUndefined :: forall a. Foreign -> Maybe a
+  fromUndefined = either (const Nothing) (unsafeFromForeign <$> _) <<< runExcept
+    <<< readUndefined
+  fromNullOrUndefined = either (const Nothing) (unsafeFromForeign <$> _)
+    <<< runExcept
+    <<< readNullOrUndefined
 
 foreign import parseImpl :: String -> JSCookie
 

@@ -1,130 +1,159 @@
 module Network.HTTP.Types.Exchange
-	( Auth(BasicAuth)
-	, Request(Request)
-	, Response(Response)
-	, http
-	, https
-	, defURI
-	, defRequest
-	, defRequest'
-	, makeQuery
-	, makeQuery'
-	, joinQuery
-	, basicAuth
-	, setUser
-	, setPassword
-	, setProtocol
-	, setHostname
-	, setPort
-	, modifyPath
-	, setPath
-	, modifyQuery
-	, setQuery
-	, modifyFragment
-	, setFragment
-	, setURI
-	, setMethod
-	, setHeaders
-	, setCookies
-	, setAuth
-	, setBody
-	, setTimeout
-	, uriToRequest'
-	, uriToRequest
-	, uriToRequest''
-	, get
-	, post
-	, postWithBody
-	, put
-	, putWithBody
-	, patch
-	, patchWithBody
-	, delete
-	, setResponseStatusCode
-	, setResponseHeaders
-	, setResponseBody
-	, setResponseCookies
-	, fromJSONWith
-	) where
+  ( Auth(BasicAuth)
+  , Request(Request)
+  , Response(Response)
+  , http
+  , https
+  , defURI
+  , defRequest
+  , defRequest'
+  , makeQuery
+  , makeQuery'
+  , joinQuery
+  , basicAuth
+  , setUser
+  , setPassword
+  , setProtocol
+  , setHostname
+  , setPort
+  , modifyPath
+  , setPath
+  , modifyQuery
+  , setQuery
+  , modifyFragment
+  , setFragment
+  , setURI
+  , setMethod
+  , setHeaders
+  , setCookies
+  , setAuth
+  , setBody
+  , setTimeout
+  , uriToRequest'
+  , uriToRequest
+  , uriToRequest''
+  , get
+  , post
+  , postWithBody
+  , put
+  , putWithBody
+  , patch
+  , patchWithBody
+  , delete
+  , setResponseStatusCode
+  , setResponseHeaders
+  , setResponseBody
+  , setResponseCookies
+  , fromJSONWith
+  ) where
 
-import Prelude
-	( ($)
-	, (<>)
-	, (<$>)
-	, (>>>)
-	, (<<<)
-	, (>>=)
-	, class Show
-	, const
-	, flip
-	, pure
-	, show
-	)
-
-import Control.Monad.Eff.Exception    (Error, error)
-import Control.Monad.Error.Class      (class MonadError, throwError)
-import Data.Time.Duration             (Milliseconds)
-import Data.Either                    (Either(Left), either)
-import Data.List                      (List, singleton)
-import Data.Maybe                     (Maybe(Just, Nothing))
-import Data.Monoid                    (mempty)
-import Data.Path.Pathy                (rootDir)
-import Data.Tuple                     (Tuple(Tuple))
-import Data.URI                       (Authority(Authority), Fragment, Host(NameAddress)
-	, HierarchicalPart(HierarchicalPart), Port(..), Query(Query), Scheme(Scheme)
-	, URIPathAbs, URI(URI))
-import Data.URI.URI                   (parse)
-import Text.Parsing.StringParser      (ParseError(ParseError))
-
-import Network.HTTP.Types.Cookie     (Cookie)
-import Network.HTTP.Types.Header     (Headers)
-import Network.HTTP.Types.Method     (Method(DELETE, GET, PATCH, POST ,PUT))
+import Control.Monad.Error.Class (class MonadError, throwError)
+import Data.Either (Either(Left), either)
+import Data.List (List, singleton)
+import Data.Maybe (Maybe(Just, Nothing))
+import Data.Monoid (mempty)
+import Data.Time.Duration (Milliseconds)
+import Data.Tuple (Tuple(Tuple))
+import Effect.Exception (Error, error)
+import Network.HTTP.Types.Cookie (Cookie)
+import Network.HTTP.Types.Header (Headers)
+import Network.HTTP.Types.Method (Method(DELETE, GET, PATCH, POST, PUT))
 import Network.HTTP.Types.StatusCode (StatusCode)
+import Pathy (rootDir)
+import Prelude
+  ( class Show
+  , const
+  , flip
+  , pure
+  , show
+  , ($)
+  , (<$>)
+  , (<<<)
+  , (<>)
+  , (>>=)
+  , (>>>)
+  )
+import StringParser (ParseError(ParseError))
+import URI
+  ( Authority(Authority)
+  , Fragment
+  , HierarchicalPart(HierarchicalPart)
+  , Host(NameAddress)
+  , Port(..)
+  , Query(Query)
+  , Scheme(Scheme)
+  , URI(URI)
+  , URIPathAbs
+  )
+import URI.URI (parse)
 
 -- | A type that represents an HTTP Authentication Scheme.
 data Auth = BasicAuth (Maybe String) (Maybe String)
 
 instance showAuth :: Show Auth where
-	show (BasicAuth user password) =
-		"(BasicAuth " <> show user <> " " <> show password <> " )"
+  show (BasicAuth user password) =
+    "(BasicAuth " <> show user <> " " <> show password <> " )"
 
 -- | A type that represents an HTTP Request.
 newtype Request = Request
-	{ uri     :: URI
-	, method  :: Method
-	, headers :: Headers
-	, cookies :: List Cookie
-	, auth    :: Maybe Auth -- ^ If Auth information is provided in both the request.uri and request.auth, the auth in request.auth is preferred.
-	, body    :: String
-	, timeout :: Maybe Milliseconds
-	}
+  { uri :: URI
+  , method :: Method
+  , headers :: Headers
+  , cookies :: List Cookie
+  , auth ::
+      Maybe Auth -- ^ If Auth information is provided in both the request.uri and request.auth, the auth in request.auth is preferred.
+  , body :: String
+  , timeout :: Maybe Milliseconds
+  }
 
 instance showRequest :: Show Request where
-	show (Request r) = "(Request {"
-		<> " uri: ("     <> show r.uri     <> "),"
-		<> " method: ("  <> show r.method  <> "),"
-		<> " headers: (" <> show r.headers <> "),"
-		<> " cookies: (" <> show r.cookies <> "),"
-		<> " auth: ("    <> show r.auth    <> "),"
-		<> " body:"      <> show r.body    <> ","
-		<> " timeout: (" <> show r.timeout <> "),"
-		<> " })"
+  show (Request r) = "(Request {"
+    <> " uri: ("
+    <> show r.uri
+    <> "),"
+    <> " method: ("
+    <> show r.method
+    <> "),"
+    <> " headers: ("
+    <> show r.headers
+    <> "),"
+    <> " cookies: ("
+    <> show r.cookies
+    <> "),"
+    <> " auth: ("
+    <> show r.auth
+    <> "),"
+    <> " body:"
+    <> show r.body
+    <> ","
+    <> " timeout: ("
+    <> show r.timeout
+    <> "),"
+    <> " })"
 
 -- | A type that represents an HTTP Response.
 newtype Response = Response
-	{ statusCode :: StatusCode
-	, headers    :: Headers
-	, body       :: String
-	, cookies    :: List Cookie
-	}
+  { statusCode :: StatusCode
+  , headers :: Headers
+  , body :: String
+  , cookies :: List Cookie
+  }
 
 instance showResponse :: Show Response where
-	show (Response r) = "(Response {"
-		<> " statusCode: (" <> show r.statusCode <> "),"
-		<> " headers: ("    <> show r.headers    <> "),"
-		<> " body:"         <> show r.body       <> ","
-		<> " cookies: ("    <> show r.cookies    <> "),"
-		<> " })"
+  show (Response r) = "(Response {"
+    <> " statusCode: ("
+    <> show r.statusCode
+    <> "),"
+    <> " headers: ("
+    <> show r.headers
+    <> "),"
+    <> " body:"
+    <> show r.body
+    <> ","
+    <> " cookies: ("
+    <> show r.cookies
+    <> "),"
+    <> " })"
 
 -- | A Scheme set to `http:`.
 http :: Scheme
@@ -138,40 +167,40 @@ https = Scheme "https"
 -- | <http://localhost:80/>.
 defURI :: URI
 defURI = URI
-	(Just http)
-	(HierarchicalPart
-		(Just
-			(Authority
-				Nothing
-				[(Tuple (NameAddress "localhost") (Just $ Port 80))]
-			)
-		)
-		(Just (Left rootDir))
-	)
-	Nothing
-	Nothing
+  (Just http)
+  ( HierarchicalPart
+      ( Just
+          ( Authority
+              Nothing
+              [ (Tuple (NameAddress "localhost") (Just $ Port 80)) ]
+          )
+      )
+      (Just (Left rootDir))
+  )
+  Nothing
+  Nothing
 
 -- | A 'default' record useful for constructing requests. Equivalent to a
 -- | request that is sent to <http://localhost:80/> with the GET method, no
 -- | headers, cookies, authentication, body or timeout.
-defRequest        ::
-	{ uri     :: URI
-	, method  :: Method
-	, headers :: Headers
-	, cookies :: List Cookie
-	, auth    :: Maybe Auth
-	, body    :: String
-	, timeout :: Maybe Milliseconds
-	}
+defRequest
+  :: { uri :: URI
+     , method :: Method
+     , headers :: Headers
+     , cookies :: List Cookie
+     , auth :: Maybe Auth
+     , body :: String
+     , timeout :: Maybe Milliseconds
+     }
 defRequest =
-	{ uri    : defURI
-	, method : GET
-	, headers: mempty
-	, cookies: mempty
-	, auth   : Nothing
-	, body   : ""
-	, timeout: Nothing
-	}
+  { uri: defURI
+  , method: GET
+  , headers: mempty
+  , cookies: mempty
+  , auth: Nothing
+  , body: ""
+  , timeout: Nothing
+  }
 
 -- | A 'default' request useful for constructing requests. It wraps the
 -- | 'defRequest' record with the 'Request' constructor.
@@ -206,38 +235,66 @@ setPassword password (BasicAuth u _) = BasicAuth u (Just password)
 
 setProtocol :: Scheme -> Request -> Request
 setProtocol protocol (Request r@{ uri: (URI uriScheme h q f) }) =
-	Request r { uri = URI (Just protocol) h q f }
+  Request r { uri = URI (Just protocol) h q f }
 
 setHostname :: Host -> Request -> Request
-setHostname hostname (Request r@{ uri: (URI s (HierarchicalPart (Just (Authority u [(Tuple _ p)])) u') q f) }) =
-	Request r { uri = URI s (HierarchicalPart (Just (Authority u [(Tuple hostname p)])) u') q f }
+setHostname
+  hostname
+  ( Request
+      r@
+        { uri:
+            ( URI s (HierarchicalPart (Just (Authority u [ (Tuple _ p) ])) u') q
+                f
+            )
+        }
+  ) =
+  Request r
+    { uri = URI s
+        (HierarchicalPart (Just (Authority u [ (Tuple hostname p) ])) u')
+        q
+        f
+    }
 setHostname _ r = r
 
 setPort :: Port -> Request -> Request
-setPort port (Request r@{ uri: (URI s (HierarchicalPart (Just (Authority u [(Tuple h _)])) u') q f) }) =
-	Request r { uri = URI s (HierarchicalPart (Just (Authority u [(Tuple h (Just port))])) u') q f }
+setPort
+  port
+  ( Request
+      r@
+        { uri:
+            ( URI s (HierarchicalPart (Just (Authority u [ (Tuple h _) ])) u') q
+                f
+            )
+        }
+  ) =
+  Request r
+    { uri = URI s
+        (HierarchicalPart (Just (Authority u [ (Tuple h (Just port)) ])) u')
+        q
+        f
+    }
 setPort _ r = r
 
 modifyPath :: (URIPathAbs -> URIPathAbs) -> Request -> Request
 modifyPath fn (Request r@{ uri: (URI s (HierarchicalPart a (Just u)) q f) }) =
-	Request r { uri = URI s (HierarchicalPart a (Just $ fn u)) q f }
-modifyPath _ r                                                               = r
+  Request r { uri = URI s (HierarchicalPart a (Just $ fn u)) q f }
+modifyPath _ r = r
 
 setPath :: URIPathAbs -> Request -> Request
 setPath = modifyPath <<< const
 
 modifyQuery :: (Query -> Query) -> Request -> Request
 modifyQuery fn (Request r@{ uri: (URI s h (Just q) f) }) =
-	Request r { uri = URI s h (Just $ fn q) f }
+  Request r { uri = URI s h (Just $ fn q) f }
 modifyQuery _ r = r
 
 setQuery :: Query -> Request -> Request
 setQuery = modifyQuery <<< const
 
 modifyFragment :: (Fragment -> Fragment) -> Request -> Request
-modifyFragment fn (Request r@{uri: (URI s h q (Just f)) }) =
-	Request r { uri = URI s h q (Just $ fn f) }
-modifyFragment _ r                                         = r
+modifyFragment fn (Request r@{ uri: (URI s h q (Just f)) }) =
+  Request r { uri = URI s h q (Just $ fn f) }
+modifyFragment _ r = r
 
 setFragment :: Fragment -> Request -> Request
 setFragment = modifyFragment <<< const
@@ -273,10 +330,10 @@ uriToRequest' uri = Request defRequest { uri = uri }
 -- | uri string could not be parsed, the parsing error is thrown.
 uriToRequest :: forall m. MonadError Error m => String -> m Request
 uriToRequest = parse >>>
-	either (extractErrorMessage >>> error >>> throwError)
-	       (uriToRequest' >>> pure)
-	where
-		extractErrorMessage (ParseError msg) = msg
+  either (extractErrorMessage >>> error >>> throwError)
+    (uriToRequest' >>> pure)
+  where
+  extractErrorMessage (ParseError msg) = msg
 
 -- | Constructs a 'Request' from a uri string. The request has all of the
 -- | values of 'defRequest', with the URI set to the passed parameter. If the
@@ -341,7 +398,8 @@ delete :: forall m. MonadError Error m => String -> m Request
 delete uri = setMethod DELETE <$> uriToRequest uri
 
 setResponseStatusCode :: StatusCode -> Response -> Response
-setResponseStatusCode statusCode (Response r) = Response r { statusCode = statusCode }
+setResponseStatusCode statusCode (Response r) = Response r
+  { statusCode = statusCode }
 
 setResponseHeaders :: Headers -> Response -> Response
 setResponseHeaders headers (Response r) = Response r { headers = headers }
@@ -359,12 +417,15 @@ setResponseCookies cookies (Response r) = Response r { cookies = cookies }
 -- | The given function is expected to take the string body, and return a `Show
 -- | errmsg => m (Left errmsg)` if the conversion fails, or a `m (Right a)` if
 -- | the conversion is successful (where `m` is our `MonadError Error m`).
-fromJSONWith' :: forall m a e. MonadError Error m => Show e =>
-		(String -> m (Either e a))                  ->
-		Response                                    ->
-		m a
+fromJSONWith'
+  :: forall m a e
+   . MonadError Error m
+  => Show e
+  => (String -> m (Either e a))
+  -> Response
+  -> m a
 fromJSONWith' fn (Response r) =
-	fn r.body >>= either (throwError <<< error <<< show) pure
+  fn r.body >>= either (throwError <<< error <<< show) pure
 
 -- | Takes a completed 'Response', extracts its string body, and converts that
 -- | to our desired type using the given function. Throws an error if the
@@ -373,8 +434,11 @@ fromJSONWith' fn (Response r) =
 -- | The given function is expected to take the string body, and return a `Show
 -- | errmsg => Left errmsg` if the conversion fails, or a `Right a` if the
 -- | conversion is successful.
-fromJSONWith :: forall m a e. MonadError Error m => Show e =>
-		(String -> Either e a)                     ->
-		Response                                   ->
-		m a
+fromJSONWith
+  :: forall m a e
+   . MonadError Error m
+  => Show e
+  => (String -> Either e a)
+  -> Response
+  -> m a
 fromJSONWith fn = fromJSONWith' (pure <<< fn)

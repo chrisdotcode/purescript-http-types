@@ -1,199 +1,199 @@
 module Network.HTTP.Types.StatusCode
-	( ReasonPhrase
-		( Continue
-		, SwitchingProtocols
-		, OK
-		, Created
-		, Accepted
-		, NonAuthoritativeInformation
-		, NoContent
-		, ResetContent
-		, PartialContent
-		, MultipleChoices
-		, MovedPermanently
-		, Found
-		, SeeOther
-		, NotModified
-		, UseProxy
-		, TemporaryRedirect
-		, BadRequest
-		, Unauthorized
-		, PaymentRequired
-		, Forbidden
-		, NotFound
-		, MethodNotAllowed
-		, NotAcceptable
-		, ProxyAuthenticationRequired
-		, RequestTimeout
-		, Conflict
-		, Gone
-		, LengthRequired
-		, PreconditionFailed
-		, PayloadTooLarge
-		, URITooLong
-		, UnsupportedMediaType
-		, RangeNotSatisfiable
-		, ExpectationFailed
-		, UpgradeRequired
-		, InternalServerError
-		, NotImplemented
-		, BadGateway
-		, ServiceUnavailable
-		, GatewayTimeout
-		, HTTPVersionNotSupported
-		, Custom
-		)
-	, StatusCode(StatusCode)
-	, status100
-	, status101
-	, status200
-	, status201
-	, status202
-	, status203
-	, status204
-	, status205
-	, status206
-	, status300
-	, status301
-	, status302
-	, status303
-	, status304
-	, status305
-	, status307
-	, status400
-	, status401
-	, status402
-	, status403
-	, status404
-	, status405
-	, status406
-	, status407
-	, status408
-	, status409
-	, status410
-	, status411
-	, status412
-	, status413
-	, status414
-	, status415
-	, status416
-	, status417
-	, status426
-	, status500
-	, status501
-	, status502
-	, status503
-	, status504
-	, status505
-	, getRecognizedStatusCodeFromInt
-	, reasonPhraseFromString
-	, statusCodeFromString
-	) where
+  ( ReasonPhrase
+      ( Continue
+      , SwitchingProtocols
+      , OK
+      , Created
+      , Accepted
+      , NonAuthoritativeInformation
+      , NoContent
+      , ResetContent
+      , PartialContent
+      , MultipleChoices
+      , MovedPermanently
+      , Found
+      , SeeOther
+      , NotModified
+      , UseProxy
+      , TemporaryRedirect
+      , BadRequest
+      , Unauthorized
+      , PaymentRequired
+      , Forbidden
+      , NotFound
+      , MethodNotAllowed
+      , NotAcceptable
+      , ProxyAuthenticationRequired
+      , RequestTimeout
+      , Conflict
+      , Gone
+      , LengthRequired
+      , PreconditionFailed
+      , PayloadTooLarge
+      , URITooLong
+      , UnsupportedMediaType
+      , RangeNotSatisfiable
+      , ExpectationFailed
+      , UpgradeRequired
+      , InternalServerError
+      , NotImplemented
+      , BadGateway
+      , ServiceUnavailable
+      , GatewayTimeout
+      , HTTPVersionNotSupported
+      , Custom
+      )
+  , StatusCode(StatusCode)
+  , status100
+  , status101
+  , status200
+  , status201
+  , status202
+  , status203
+  , status204
+  , status205
+  , status206
+  , status300
+  , status301
+  , status302
+  , status303
+  , status304
+  , status305
+  , status307
+  , status400
+  , status401
+  , status402
+  , status403
+  , status404
+  , status405
+  , status406
+  , status407
+  , status408
+  , status409
+  , status410
+  , status411
+  , status412
+  , status413
+  , status414
+  , status415
+  , status416
+  , status417
+  , status426
+  , status500
+  , status501
+  , status502
+  , status503
+  , status504
+  , status505
+  , getRecognizedStatusCodeFromInt
+  , reasonPhraseFromString
+  , statusCodeFromString
+  ) where
 
-import Prelude
-	( (==)
-	, (&&)
-	, (<>)
-	, class Eq
-	, class Ord
-	, class Show
-	, compare
-	, const
-	, show
-	)
-
-import Data.Maybe  (Maybe(Just, Nothing))
+import Data.Maybe (Maybe(Just, Nothing))
 import Data.String (toLower)
+import Prelude
+  ( class Eq
+  , class Ord
+  , class Show
+  , compare
+  , const
+  , show
+  , (&&)
+  , (<>)
+  , (==)
+  )
 
 -- | A list of standard Reason Phrases that (usually) accompany a
 -- | status code number. If it's non-standard, use the 'Custom'
 -- | constructor.
-data ReasonPhrase = Continue
-		  | SwitchingProtocols
-		  | OK
-		  | Created
-		  | Accepted
-		  | NonAuthoritativeInformation
-		  | NoContent
-		  | ResetContent
-		  | PartialContent
-		  | MultipleChoices
-		  | MovedPermanently
-		  | Found
-		  | SeeOther
-		  | NotModified
-		  | UseProxy
-		  | TemporaryRedirect
-		  | BadRequest
-		  | Unauthorized
-		  | PaymentRequired
-		  | Forbidden
-		  | NotFound
-		  | MethodNotAllowed
-		  | NotAcceptable
-		  | ProxyAuthenticationRequired
-		  | RequestTimeout
-		  | Conflict
-		  | Gone
-		  | LengthRequired
-		  | PreconditionFailed
-		  | PayloadTooLarge
-		  | URITooLong
-		  | UnsupportedMediaType
-		  | RangeNotSatisfiable
-		  | ExpectationFailed
-		  | UpgradeRequired
-		  | InternalServerError
-		  | NotImplemented
-		  | BadGateway
-		  | ServiceUnavailable
-		  | GatewayTimeout
-		  | HTTPVersionNotSupported
-		  | Custom String
+data ReasonPhrase
+  = Continue
+  | SwitchingProtocols
+  | OK
+  | Created
+  | Accepted
+  | NonAuthoritativeInformation
+  | NoContent
+  | ResetContent
+  | PartialContent
+  | MultipleChoices
+  | MovedPermanently
+  | Found
+  | SeeOther
+  | NotModified
+  | UseProxy
+  | TemporaryRedirect
+  | BadRequest
+  | Unauthorized
+  | PaymentRequired
+  | Forbidden
+  | NotFound
+  | MethodNotAllowed
+  | NotAcceptable
+  | ProxyAuthenticationRequired
+  | RequestTimeout
+  | Conflict
+  | Gone
+  | LengthRequired
+  | PreconditionFailed
+  | PayloadTooLarge
+  | URITooLong
+  | UnsupportedMediaType
+  | RangeNotSatisfiable
+  | ExpectationFailed
+  | UpgradeRequired
+  | InternalServerError
+  | NotImplemented
+  | BadGateway
+  | ServiceUnavailable
+  | GatewayTimeout
+  | HTTPVersionNotSupported
+  | Custom String
 
 instance showReasonPhrase :: Show ReasonPhrase where
-	show Continue                    = "Continue"
-	show SwitchingProtocols          = "Switching Protocols"
-	show OK                          = "OK"
-	show Created                     = "Created"
-	show Accepted                    = "Accepted"
-	show NonAuthoritativeInformation = "Non-Authoritative Information"
-	show NoContent                   = "No Content"
-	show ResetContent                = "Reset Content"
-	show PartialContent              = "Partial Content"
-	show MultipleChoices             = "Multiple Choices"
-	show MovedPermanently            = "Moved Permanently"
-	show Found                       = "Found"
-	show SeeOther                    = "See Other"
-	show NotModified                 = "Not Modified"
-	show UseProxy                    = "Use Proxy"
-	show TemporaryRedirect           = "Temporary Redirect"
-	show BadRequest                  = "Bad Request"
-	show Unauthorized                = "Unauthorized"
-	show PaymentRequired             = "Payment Required"
-	show Forbidden                   = "Forbidden"
-	show NotFound                    = "Not Found"
-	show MethodNotAllowed            = "Method Not Allowed"
-	show NotAcceptable               = "Not Acceptable"
-	show ProxyAuthenticationRequired = "Proxy Authentication Required"
-	show RequestTimeout              = "Request Timeout"
-	show Conflict                    = "Conflict"
-	show Gone                        = "Gone"
-	show LengthRequired              = "Length Required"
-	show PreconditionFailed          = "Precondition Failed"
-	show PayloadTooLarge             = "Payload Too Large"
-	show URITooLong                  = "URI Too Long"
-	show UnsupportedMediaType        = "Unsupported Media Type"
-	show RangeNotSatisfiable         = "Range Not Satisfiable"
-	show ExpectationFailed           = "Expectation Failed"
-	show UpgradeRequired             = "Upgrade Required"
-	show InternalServerError         = "Internal Service Error"
-	show NotImplemented              = "Not Implemented"
-	show BadGateway                  = "Bad Gateway"
-	show ServiceUnavailable          = "Service Unavailable"
-	show GatewayTimeout              = "Gateway Timeout"
-	show HTTPVersionNotSupported     = "HTTP Version Not Supported"
-	show (Custom r)                  = r
+  show Continue = "Continue"
+  show SwitchingProtocols = "Switching Protocols"
+  show OK = "OK"
+  show Created = "Created"
+  show Accepted = "Accepted"
+  show NonAuthoritativeInformation = "Non-Authoritative Information"
+  show NoContent = "No Content"
+  show ResetContent = "Reset Content"
+  show PartialContent = "Partial Content"
+  show MultipleChoices = "Multiple Choices"
+  show MovedPermanently = "Moved Permanently"
+  show Found = "Found"
+  show SeeOther = "See Other"
+  show NotModified = "Not Modified"
+  show UseProxy = "Use Proxy"
+  show TemporaryRedirect = "Temporary Redirect"
+  show BadRequest = "Bad Request"
+  show Unauthorized = "Unauthorized"
+  show PaymentRequired = "Payment Required"
+  show Forbidden = "Forbidden"
+  show NotFound = "Not Found"
+  show MethodNotAllowed = "Method Not Allowed"
+  show NotAcceptable = "Not Acceptable"
+  show ProxyAuthenticationRequired = "Proxy Authentication Required"
+  show RequestTimeout = "Request Timeout"
+  show Conflict = "Conflict"
+  show Gone = "Gone"
+  show LengthRequired = "Length Required"
+  show PreconditionFailed = "Precondition Failed"
+  show PayloadTooLarge = "Payload Too Large"
+  show URITooLong = "URI Too Long"
+  show UnsupportedMediaType = "Unsupported Media Type"
+  show RangeNotSatisfiable = "Range Not Satisfiable"
+  show ExpectationFailed = "Expectation Failed"
+  show UpgradeRequired = "Upgrade Required"
+  show InternalServerError = "Internal Service Error"
+  show NotImplemented = "Not Implemented"
+  show BadGateway = "Bad Gateway"
+  show ServiceUnavailable = "Service Unavailable"
+  show GatewayTimeout = "Gateway Timeout"
+  show HTTPVersionNotSupported = "HTTP Version Not Supported"
+  show (Custom r) = r
 
 -- | Creates a 'ReasonPhrase' from a string. If the given string is a
 -- | non-standard HTTP Reason Phrase, then a 'Custom' 'ReasonPhrase'
@@ -204,52 +204,54 @@ instance showReasonPhrase :: Show ReasonPhrase where
 -- accepting mixed-cased messages.
 reasonPhraseFromString :: String -> ReasonPhrase
 reasonPhraseFromString s = reasonPhraseFromString' (toLower s)
-	where
-		reasonPhraseFromString' "continue"                      = Continue
-		reasonPhraseFromString' "switching protocols"           = SwitchingProtocols
-		reasonPhraseFromString' "ok"                            = OK
-		reasonPhraseFromString' "created"                       = Created
-		reasonPhraseFromString' "accepted"                      = Accepted
-		reasonPhraseFromString' "non-authoritative information" = NonAuthoritativeInformation
-		reasonPhraseFromString' "no content"                    = NoContent
-		reasonPhraseFromString' "reset content"                 = ResetContent
-		reasonPhraseFromString' "partial content"               = PartialContent
-		reasonPhraseFromString' "multiple choices"              = MultipleChoices
-		reasonPhraseFromString' "moved permanently"             = MovedPermanently
-		reasonPhraseFromString' "found"                         = Found
-		reasonPhraseFromString' "see other"                     = SeeOther
-		reasonPhraseFromString' "not modified"                  = NotModified
-		reasonPhraseFromString' "use proxy"                     = UseProxy
-		reasonPhraseFromString' "temporary redirect"            = TemporaryRedirect
-		reasonPhraseFromString' "bad request"                   = BadRequest
-		reasonPhraseFromString' "unauthorized"                  = Unauthorized
-		reasonPhraseFromString' "payment required"              = PaymentRequired
-		reasonPhraseFromString' "forbidden"                     = Forbidden
-		reasonPhraseFromString' "not found"                     = NotFound
-		reasonPhraseFromString' "method not allowed"            = MethodNotAllowed
-		reasonPhraseFromString' "not acceptable"                = NotAcceptable
-		reasonPhraseFromString' "proxy authentication required" = ProxyAuthenticationRequired
-		reasonPhraseFromString' "request timeout"               = RequestTimeout
-		reasonPhraseFromString' "conflict"                      = Conflict
-		reasonPhraseFromString' "gone"                          = Gone
-		reasonPhraseFromString' "length required"               = LengthRequired
-		reasonPhraseFromString' "precondition failed"           = PreconditionFailed
-		reasonPhraseFromString' "payload too large"             = PayloadTooLarge
-		reasonPhraseFromString' "uri too long"                  = URITooLong
-		reasonPhraseFromString' "unsupported media type"        = UnsupportedMediaType
-		reasonPhraseFromString' "range not satisfiable"         = RangeNotSatisfiable
-		reasonPhraseFromString' "expectation failed"            = ExpectationFailed
-		reasonPhraseFromString' "upgrade required"              = UpgradeRequired
-		reasonPhraseFromString' "internal server error"        = InternalServerError
-		reasonPhraseFromString' "not implemented"               = NotImplemented
-		reasonPhraseFromString' "bad gateway"                   = BadGateway
-		reasonPhraseFromString' "service unavailable"           = ServiceUnavailable
-		reasonPhraseFromString' "gateway timeout"               = GatewayTimeout
-		reasonPhraseFromString' "http version not supported"    = HTTPVersionNotSupported
-		reasonPhraseFromString' _                               = Custom s
+  where
+  reasonPhraseFromString' "continue" = Continue
+  reasonPhraseFromString' "switching protocols" = SwitchingProtocols
+  reasonPhraseFromString' "ok" = OK
+  reasonPhraseFromString' "created" = Created
+  reasonPhraseFromString' "accepted" = Accepted
+  reasonPhraseFromString' "non-authoritative information" =
+    NonAuthoritativeInformation
+  reasonPhraseFromString' "no content" = NoContent
+  reasonPhraseFromString' "reset content" = ResetContent
+  reasonPhraseFromString' "partial content" = PartialContent
+  reasonPhraseFromString' "multiple choices" = MultipleChoices
+  reasonPhraseFromString' "moved permanently" = MovedPermanently
+  reasonPhraseFromString' "found" = Found
+  reasonPhraseFromString' "see other" = SeeOther
+  reasonPhraseFromString' "not modified" = NotModified
+  reasonPhraseFromString' "use proxy" = UseProxy
+  reasonPhraseFromString' "temporary redirect" = TemporaryRedirect
+  reasonPhraseFromString' "bad request" = BadRequest
+  reasonPhraseFromString' "unauthorized" = Unauthorized
+  reasonPhraseFromString' "payment required" = PaymentRequired
+  reasonPhraseFromString' "forbidden" = Forbidden
+  reasonPhraseFromString' "not found" = NotFound
+  reasonPhraseFromString' "method not allowed" = MethodNotAllowed
+  reasonPhraseFromString' "not acceptable" = NotAcceptable
+  reasonPhraseFromString' "proxy authentication required" =
+    ProxyAuthenticationRequired
+  reasonPhraseFromString' "request timeout" = RequestTimeout
+  reasonPhraseFromString' "conflict" = Conflict
+  reasonPhraseFromString' "gone" = Gone
+  reasonPhraseFromString' "length required" = LengthRequired
+  reasonPhraseFromString' "precondition failed" = PreconditionFailed
+  reasonPhraseFromString' "payload too large" = PayloadTooLarge
+  reasonPhraseFromString' "uri too long" = URITooLong
+  reasonPhraseFromString' "unsupported media type" = UnsupportedMediaType
+  reasonPhraseFromString' "range not satisfiable" = RangeNotSatisfiable
+  reasonPhraseFromString' "expectation failed" = ExpectationFailed
+  reasonPhraseFromString' "upgrade required" = UpgradeRequired
+  reasonPhraseFromString' "internal server error" = InternalServerError
+  reasonPhraseFromString' "not implemented" = NotImplemented
+  reasonPhraseFromString' "bad gateway" = BadGateway
+  reasonPhraseFromString' "service unavailable" = ServiceUnavailable
+  reasonPhraseFromString' "gateway timeout" = GatewayTimeout
+  reasonPhraseFromString' "http version not supported" = HTTPVersionNotSupported
+  reasonPhraseFromString' _ = Custom s
 
 instance eqReasonPhrase :: Eq ReasonPhrase where
-	eq r1 r2 = show r1 == show r2
+  eq r1 r2 = show r1 == show r2
 
 -- | A type that represents an HTTP StatusCode. Consists of both it's
 -- | code (e.g.: '400'), and it's Reason Phrase (e.g.: 'Bad Request').
@@ -258,315 +260,316 @@ instance eqReasonPhrase :: Eq ReasonPhrase where
 -- more practical to just call it StatusCode, and group the Reason
 -- Phrase with the status code.
 newtype StatusCode = StatusCode
-	{ code         :: Int
-	, reasonPhrase :: ReasonPhrase
-	}
+  { code :: Int
+  , reasonPhrase :: ReasonPhrase
+  }
 
 instance showStatusCode :: Show StatusCode where
-	show (StatusCode { code, reasonPhrase }) = show code
-		<> " " <> show reasonPhrase
+  show (StatusCode { code, reasonPhrase }) = show code
+    <> " "
+    <> show reasonPhrase
 
 instance eqStatusCode :: Eq StatusCode where
-	eq (StatusCode s1) (StatusCode s2) = s1.code == s2.code
-		&& s1.reasonPhrase == s2.reasonPhrase
+  eq (StatusCode s1) (StatusCode s2) = s1.code == s2.code
+    && s1.reasonPhrase == s2.reasonPhrase
 
 instance ordStatusCode :: Ord StatusCode where
-	compare (StatusCode { code: c1 }) (StatusCode { code: c2 }) =
-		compare c1 c2
+  compare (StatusCode { code: c1 }) (StatusCode { code: c2 }) =
+    compare c1 c2
 
 setCode :: Int -> StatusCode -> StatusCode
 setCode code (StatusCode s) = StatusCode s { code = code }
 
 setResponsePhrase :: ReasonPhrase -> StatusCode -> StatusCode
 setResponsePhrase reasonPhrase (StatusCode s) =
-	StatusCode s { reasonPhrase = reasonPhrase }
+  StatusCode s { reasonPhrase = reasonPhrase }
 
 -- | Continue
 status100 :: StatusCode
 status100 = StatusCode
-	{ code        : 100
-	, reasonPhrase: Continue
-	}
+  { code: 100
+  , reasonPhrase: Continue
+  }
 
 -- | Switching Protocols
 status101 :: StatusCode
 status101 = StatusCode
-	{ code        : 101
-	, reasonPhrase: SwitchingProtocols
-	}
+  { code: 101
+  , reasonPhrase: SwitchingProtocols
+  }
 
 -- | OK
 status200 :: StatusCode
 status200 = StatusCode
-	{ code        : 200
-	, reasonPhrase: OK
-	}
+  { code: 200
+  , reasonPhrase: OK
+  }
 
 -- | Created
 status201 :: StatusCode
 status201 = StatusCode
-	{ code        : 201
-	, reasonPhrase: Created
-	}
+  { code: 201
+  , reasonPhrase: Created
+  }
 
 -- | Accepted
 status202 :: StatusCode
 status202 = StatusCode
-	{ code        : 202
-	, reasonPhrase: Accepted
-	}
+  { code: 202
+  , reasonPhrase: Accepted
+  }
 
 -- | Non-Authoritative Information
 status203 :: StatusCode
 status203 = StatusCode
-	{ code        : 203
-	, reasonPhrase: NonAuthoritativeInformation
-	}
+  { code: 203
+  , reasonPhrase: NonAuthoritativeInformation
+  }
 
 -- | No Content
 status204 :: StatusCode
 status204 = StatusCode
-	{ code        : 204
-	, reasonPhrase: NoContent
-	}
+  { code: 204
+  , reasonPhrase: NoContent
+  }
 
 -- | Reset Content
 status205 :: StatusCode
 status205 = StatusCode
-	{ code        : 205
-	, reasonPhrase: ResetContent
-	}
+  { code: 205
+  , reasonPhrase: ResetContent
+  }
 
 -- | Partial Content
 status206 :: StatusCode
 status206 = StatusCode
-	{ code        : 206
-	, reasonPhrase: PartialContent
-	}
+  { code: 206
+  , reasonPhrase: PartialContent
+  }
 
 -- | Multiple Choices
 status300 :: StatusCode
 status300 = StatusCode
-	{ code        : 300
-	, reasonPhrase: MultipleChoices
-	}
+  { code: 300
+  , reasonPhrase: MultipleChoices
+  }
 
 -- | Moved Permanently
 status301 :: StatusCode
 status301 = StatusCode
-	{ code        : 301
-	, reasonPhrase: MovedPermanently
-	}
+  { code: 301
+  , reasonPhrase: MovedPermanently
+  }
 
 -- | Found
 status302 :: StatusCode
 status302 = StatusCode
-	{ code        : 302
-	, reasonPhrase: Found
-	}
+  { code: 302
+  , reasonPhrase: Found
+  }
 
 -- | See Other
 status303 :: StatusCode
 status303 = StatusCode
-	{ code        : 303
-	, reasonPhrase: SeeOther
-	}
+  { code: 303
+  , reasonPhrase: SeeOther
+  }
 
 -- | Not Modified
 status304 :: StatusCode
 status304 = StatusCode
-	{ code        : 304
-	, reasonPhrase: NotModified
-	}
+  { code: 304
+  , reasonPhrase: NotModified
+  }
 
 -- | Use Proxy
 status305 :: StatusCode
 status305 = StatusCode
-	{ code        : 305
-	, reasonPhrase: UseProxy
-	}
+  { code: 305
+  , reasonPhrase: UseProxy
+  }
 
 -- | Temporary Redirect
 status307 :: StatusCode
 status307 = StatusCode
-	{ code        : 307
-	, reasonPhrase: TemporaryRedirect
-	}
+  { code: 307
+  , reasonPhrase: TemporaryRedirect
+  }
 
 -- | Bad Request
 status400 :: StatusCode
 status400 = StatusCode
-	{ code        : 400
-	, reasonPhrase: BadRequest
-	}
+  { code: 400
+  , reasonPhrase: BadRequest
+  }
 
 -- | Unauthorized
 status401 :: StatusCode
 status401 = StatusCode
-	{ code        : 401
-	, reasonPhrase: Unauthorized
-	}
+  { code: 401
+  , reasonPhrase: Unauthorized
+  }
 
 -- | Payment Required
 status402 :: StatusCode
 status402 = StatusCode
-	{ code        : 402
-	, reasonPhrase: PaymentRequired
-	}
+  { code: 402
+  , reasonPhrase: PaymentRequired
+  }
 
 -- | Forbidden
 status403 :: StatusCode
 status403 = StatusCode
-	{ code        : 403
-	, reasonPhrase: Forbidden
-	}
+  { code: 403
+  , reasonPhrase: Forbidden
+  }
 
 -- | Not Found
 status404 :: StatusCode
 status404 = StatusCode
-	{ code        : 404
-	, reasonPhrase: NotFound
-	}
+  { code: 404
+  , reasonPhrase: NotFound
+  }
 
 -- | Method Not Allowed
 status405 :: StatusCode
 status405 = StatusCode
-	{ code        : 405
-	, reasonPhrase: MethodNotAllowed
-	}
+  { code: 405
+  , reasonPhrase: MethodNotAllowed
+  }
 
 -- | Not Acceptable
 status406 :: StatusCode
 status406 = StatusCode
-	{ code        : 406
-	, reasonPhrase: NotAcceptable
-	}
+  { code: 406
+  , reasonPhrase: NotAcceptable
+  }
 
 -- | Proxy Authentication Required
 status407 :: StatusCode
 status407 = StatusCode
-	{ code        : 407
-	, reasonPhrase: ProxyAuthenticationRequired
-	}
+  { code: 407
+  , reasonPhrase: ProxyAuthenticationRequired
+  }
 
 -- | Request Timeout
 status408 :: StatusCode
 status408 = StatusCode
-	{ code        : 408
-	, reasonPhrase: RequestTimeout
-	}
+  { code: 408
+  , reasonPhrase: RequestTimeout
+  }
 
 -- | Conflict
 status409 :: StatusCode
 status409 = StatusCode
-	{ code        : 409
-	, reasonPhrase: Conflict
-	}
+  { code: 409
+  , reasonPhrase: Conflict
+  }
 
 -- | Gone
 status410 :: StatusCode
 status410 = StatusCode
-	{ code        : 410
-	, reasonPhrase: Gone
-	}
+  { code: 410
+  , reasonPhrase: Gone
+  }
 
 -- | Length Required
 status411 :: StatusCode
 status411 = StatusCode
-	{ code        : 411
-	, reasonPhrase: LengthRequired
-	}
+  { code: 411
+  , reasonPhrase: LengthRequired
+  }
 
 -- | Precondition Failed
 status412 :: StatusCode
 status412 = StatusCode
-	{ code        : 412
-	, reasonPhrase: PreconditionFailed
-	}
+  { code: 412
+  , reasonPhrase: PreconditionFailed
+  }
 
 -- | Payload Too Large
 status413 :: StatusCode
 status413 = StatusCode
-	{ code        : 413
-	, reasonPhrase: PayloadTooLarge
-	}
+  { code: 413
+  , reasonPhrase: PayloadTooLarge
+  }
 
 -- | URI Too Long
 status414 :: StatusCode
 status414 = StatusCode
-	{ code        : 414
-	, reasonPhrase: URITooLong
-	}
+  { code: 414
+  , reasonPhrase: URITooLong
+  }
 
 -- | Unsupported Media Type
 status415 :: StatusCode
 status415 = StatusCode
-	{ code        : 415
-	, reasonPhrase: UnsupportedMediaType
-	}
+  { code: 415
+  , reasonPhrase: UnsupportedMediaType
+  }
 
 -- | Range Not Satisfiable
 status416 :: StatusCode
 status416 = StatusCode
-	{ code        : 416
-	, reasonPhrase: RangeNotSatisfiable
-	}
+  { code: 416
+  , reasonPhrase: RangeNotSatisfiable
+  }
 
 -- | Expectation Failed
 status417 :: StatusCode
 status417 = StatusCode
-	{ code        : 417
-	, reasonPhrase: ExpectationFailed
-	}
+  { code: 417
+  , reasonPhrase: ExpectationFailed
+  }
 
 -- | Upgrade Required
 status426 :: StatusCode
 status426 = StatusCode
-	{ code        : 426
-	, reasonPhrase: UpgradeRequired
-	}
+  { code: 426
+  , reasonPhrase: UpgradeRequired
+  }
 
 -- | Internal Server Error
 status500 :: StatusCode
 status500 = StatusCode
-	{ code        : 500
-	, reasonPhrase: InternalServerError
-	}
+  { code: 500
+  , reasonPhrase: InternalServerError
+  }
 
 -- | Not Implemented
 status501 :: StatusCode
 status501 = StatusCode
-	{ code        : 501
-	, reasonPhrase: NotImplemented
-	}
+  { code: 501
+  , reasonPhrase: NotImplemented
+  }
 
 -- | Bad Gateway
 status502 :: StatusCode
 status502 = StatusCode
-	{ code        : 502
-	, reasonPhrase: BadGateway
-	}
+  { code: 502
+  , reasonPhrase: BadGateway
+  }
 
 -- | Service Unavailable
 status503 :: StatusCode
 status503 = StatusCode
-	{ code        : 503
-	, reasonPhrase: ServiceUnavailable
-	}
+  { code: 503
+  , reasonPhrase: ServiceUnavailable
+  }
 
 -- | Gateway Timeout
 status504 :: StatusCode
 status504 = StatusCode
-	{ code        : 504
-	, reasonPhrase: GatewayTimeout
-	}
+  { code: 504
+  , reasonPhrase: GatewayTimeout
+  }
 
 -- | HTTP Version Not Supported
 status505 :: StatusCode
 status505 = StatusCode
-	{ code        : 505
-	, reasonPhrase: HTTPVersionNotSupported
-	}
+  { code: 505
+  , reasonPhrase: HTTPVersionNotSupported
+  }
 
 -- | Returns a standard 'StatusCode' if the given integer correlates
 -- | to a standard status code number. Returns 'Nothing' otherwise.
@@ -612,14 +615,19 @@ getRecognizedStatusCodeFromInt 502 = Just status502
 getRecognizedStatusCodeFromInt 503 = Just status503
 getRecognizedStatusCodeFromInt 504 = Just status504
 getRecognizedStatusCodeFromInt 505 = Just status505
-getRecognizedStatusCodeFromInt _   = Nothing
+getRecognizedStatusCodeFromInt _ = Nothing
 
-foreign import statusCodeFromStringImpl :: (StatusCode -> Maybe StatusCode)                              -> -- Just constructor
-					   (StatusCode -> Maybe StatusCode)                              -> -- Nothing constructor
-					   ({ code :: Int, reasonPhrase :: ReasonPhrase } -> StatusCode) -> -- StatusCode constructor
-					   (String -> ReasonPhrase)                                      -> -- reasonPhraseFromString
-					   String                                                        ->
-					   Maybe StatusCode
+foreign import statusCodeFromStringImpl
+  :: (StatusCode -> Maybe StatusCode)
+  -> -- Just constructor
+  (StatusCode -> Maybe StatusCode)
+  -> -- Nothing constructor
+  ({ code :: Int, reasonPhrase :: ReasonPhrase } -> StatusCode)
+  -> -- StatusCode constructor
+  (String -> ReasonPhrase)
+  -> -- reasonPhraseFromString
+  String
+  -> Maybe StatusCode
 
 -- | Returns a 'StatusCode' if the given string can be coerced into
 -- | one. The expected string format is `Status-Code SP Reason-Phrase`
@@ -627,4 +635,5 @@ foreign import statusCodeFromStringImpl :: (StatusCode -> Maybe StatusCode)     
 --
 -- XXX I should replace this with a pure PureScript impl.
 statusCodeFromString :: String -> Maybe StatusCode
-statusCodeFromString = statusCodeFromStringImpl Just (const Nothing) StatusCode reasonPhraseFromString
+statusCodeFromString = statusCodeFromStringImpl Just (const Nothing) StatusCode
+  reasonPhraseFromString

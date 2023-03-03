@@ -1,6 +1,6 @@
 'use strict';
 
-function statusCodeFromStringImpl(just) {
+export function statusCodeFromStringImpl(just) {
 	return function(nothing) {
 	return function(StatusCode) {
 	return function(reasonPhraseFromString) {
@@ -22,5 +22,3 @@ function statusCodeFromStringImpl(just) {
 		}
 	}}}}
 }
-
-exports.statusCodeFromStringImpl = statusCodeFromStringImpl;
