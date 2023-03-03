@@ -339,8 +339,6 @@ function parse(str, options) {
 }
 
 // XXX Eventually give this a pure PureScript implementation.
-function parseImpl(cookieString) {
+export function parseImpl(cookieString) {
 	return parse(cookieString);
 }
-
-exports.parseImpl = parseImpl;
