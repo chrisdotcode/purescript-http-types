@@ -21,36 +21,15 @@ import Data.Either (Either(Left, Right), either)
 import Data.JSDate (toDateTime)
 import Data.List (List, intercalate)
 import Data.Maybe (Maybe(Just, Nothing), fromMaybe)
+import Data.String.NonEmpty as NES
 import Data.Time.Duration (Milliseconds(Milliseconds))
-import Foreign
-  ( Foreign
-  , readNullOrUndefined
-  , readUndefined
-  , unsafeFromForeign
-  )
-import Pathy
-  ( Abs
-  , AbsDir
-  , parseAbsDir
-  , parseAbsFile
-  , rootDir
-  )
-import Prelude
-  ( class Show
-  , const
-  , identity
-  , map
-  , show
-  , ($)
-  , (<$>)
-  , (<<<)
-  , (<>)
-  , (>>=)
-  , (>>>)
-  )
-import StringParser (runParser)
+import Foreign (Foreign, readNullOrUndefined, readUndefined, unsafeFromForeign)
+import Parsing (runParser)
+import Pathy (Abs, AbsDir, AbsFile, parseAbsDir, parseAbsFile, posixParser, rootDir)
+import Prelude (class Show, const, identity, map, show, ($), (<$>), (<<<), (<>), (>>=), (>>>))
 import URI (Host(NameAddress), Path)
 import URI.Host (parser)
+import URI.Host.RegName as RegName
 
 -- | The cookie object we get back from 'parseImpl'.
 newtype JSCookie = JSCookie
@@ -77,7 +56,7 @@ newtype Cookie = Cookie
   , expires :: Maybe DateTime
   , httpOnly :: Maybe Boolean
   , maxAge :: Maybe Instant
-  , path :: AbsDir
+  , path :: Either AbsDir AbsFile
   , secure :: Maybe Boolean
   }
 
@@ -127,7 +106,7 @@ setHttpOnly httpOnly (Cookie c) = Cookie c { httpOnly = Just httpOnly }
 setMaxAge :: Instant -> Cookie -> Cookie
 setMaxAge maxAge (Cookie c) = Cookie c { maxAge = Just maxAge }
 
-setPath :: AbsDir -> Cookie -> Cookie
+setPath :: Either AbsDir AbsFile -> Cookie -> Cookie
 setPath path (Cookie c) = Cookie c { path = path }
 
 setSecure :: Boolean -> Cookie -> Cookie
@@ -140,14 +119,14 @@ toCookie (JSCookie c) = Cookie
   , value: c.value
   -- XXX If a host can't be parsed, just convert the string domain value into a NameAddress and return it;
   -- but maybe we should throw here?
-  , domain: (\d -> either (const $ NameAddress d) identity $ runParser parser d)
+  , domain: (\d -> either (const $ NameAddress $ RegName.fromString d) identity $ runParser (NES.toString d) parser)
       <$>
-        fromUndefined c.domain
+        (fromUndefined c.domain >>= NES.fromString)
   , expires: fromUndefined c.expires >>= toDateTime
   , httpOnly: fromUndefined c.httpOnly
   , maxAge: fromUndefined c.maxAge >>= (Milliseconds >>> instant)
   , path: fromMaybe (Left rootDir) $ fromNullOrUndefined c.path >>= \p ->
-      (Left <$> parseAbsDir p) <|> (Right <$> parseAbsFile p)
+      (Left <$> parseAbsDir posixParser p) <|> (Right <$> parseAbsFile posixParser p)
   , secure: fromUndefined c.secure
   }
   where

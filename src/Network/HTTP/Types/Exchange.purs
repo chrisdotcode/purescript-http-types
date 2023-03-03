@@ -2,14 +2,15 @@ module Network.HTTP.Types.Exchange
   ( Auth(BasicAuth)
   , Request(Request)
   , Response(Response)
+  , URI'
   , http
   , https
   , defURI
   , defRequest
   , defRequest'
   , makeQuery
-  , makeQuery'
-  , joinQuery
+  -- , makeQuery' -- BREAKING: Use `URI.Query.fromString` instead.
+  -- , joinQuery -- BREAKING: Use `Monoid Query` instance instead.
   , basicAuth
   , setUser
   , setPassword
@@ -47,11 +48,15 @@ module Network.HTTP.Types.Exchange
   , fromJSONWith
   ) where
 
+import Prelude
+
+import Control.Alt ((<|>))
 import Control.Monad.Error.Class (class MonadError, throwError)
-import Data.Either (Either(Left), either)
-import Data.List (List, singleton)
+import Data.Either (Either(..), either)
+import Data.List (List)
+import Data.Map as Map
 import Data.Maybe (Maybe(Just, Nothing))
-import Data.Monoid (mempty)
+import Data.String.NonEmpty (nes)
 import Data.Time.Duration (Milliseconds)
 import Data.Tuple (Tuple(Tuple))
 import Effect.Exception (Error, error)
@@ -59,33 +64,19 @@ import Network.HTTP.Types.Cookie (Cookie)
 import Network.HTTP.Types.Header (Headers)
 import Network.HTTP.Types.Method (Method(DELETE, GET, PATCH, POST, PUT))
 import Network.HTTP.Types.StatusCode (StatusCode)
-import Pathy (rootDir)
-import Prelude
-  ( class Show
-  , const
-  , flip
-  , pure
-  , show
-  , ($)
-  , (<$>)
-  , (<<<)
-  , (<>)
-  , (>>=)
-  , (>>>)
-  )
-import StringParser (ParseError(ParseError))
-import URI
-  ( Authority(Authority)
-  , Fragment
-  , HierarchicalPart(HierarchicalPart)
-  , Host(NameAddress)
-  , Port(..)
-  , Query(Query)
-  , Scheme(Scheme)
-  , URI(URI)
-  , URIPathAbs
-  )
-import URI.URI (parse)
+import Parsing (Parser, parseErrorMessage, runParser)
+import Parsing.Combinators (optionMaybe)
+import Parsing.Combinators.Array (many)
+import Pathy (AbsDir, AbsFile, parseAbsDir, parseAbsFile, posixParser, rootDir)
+import Type.Proxy (Proxy(..))
+import URI (Authority(Authority), Fragment, HierarchicalPart(..), Host(NameAddress), Port, Query, Scheme, URI(URI), UserInfo, HierPath)
+import URI.Host as Host
+import URI.Host.RegName as RegName
+import URI.Path as Path
+import URI.Port as Port
+import URI.Query as Query
+import URI.Scheme as Scheme
+import URI.URI (parser)
 
 -- | A type that represents an HTTP Authentication Scheme.
 data Auth = BasicAuth (Maybe String) (Maybe String)
@@ -94,9 +85,11 @@ instance showAuth :: Show Auth where
   show (BasicAuth user password) =
     "(BasicAuth " <> show user <> " " <> show password <> " )"
 
+type URI' = URI UserInfo (Array (Tuple Host (Maybe Port))) (Maybe (Either AbsDir AbsFile)) HierPath Query Fragment
+
 -- | A type that represents an HTTP Request.
 newtype Request = Request
-  { uri :: URI
+  { uri :: URI'
   , method :: Method
   , headers :: Headers
   , cookies :: List Cookie
@@ -157,24 +150,22 @@ instance showResponse :: Show Response where
 
 -- | A Scheme set to `http:`.
 http :: Scheme
-http = Scheme "http"
+http = Scheme.unsafeFromString "http"
 
 -- | A Scheme set to `https:`.
 https :: Scheme
-https = Scheme "https"
+https = Scheme.unsafeFromString "https"
 
 -- | A 'default' base url useful for constructing requests. Equivalent to
 -- | <http://localhost:80/>.
-defURI :: URI
+defURI :: URI'
 defURI = URI
-  (Just http)
-  ( HierarchicalPart
-      ( Just
+  http
+  ( HierarchicalPartAuth
           ( Authority
               Nothing
-              [ (Tuple (NameAddress "localhost") (Just $ Port 80)) ]
+              [ (Tuple (NameAddress $ RegName.fromString $ nes (Proxy :: _ "localhost")) (Just $ Port.unsafeFromInt 80)) ]
           )
-      )
       (Just (Left rootDir))
   )
   Nothing
@@ -184,7 +175,7 @@ defURI = URI
 -- | request that is sent to <http://localhost:80/> with the GET method, no
 -- | headers, cookies, authentication, body or timeout.
 defRequest
-  :: { uri :: URI
+  :: { uri :: URI'
      , method :: Method
      , headers :: Headers
      , cookies :: List Cookie
@@ -195,7 +186,7 @@ defRequest
 defRequest =
   { uri: defURI
   , method: GET
-  , headers: mempty
+  , headers: Map.empty
   , cookies: mempty
   , auth: Nothing
   , body: ""
@@ -210,17 +201,7 @@ defRequest' = Request defRequest
 -- | Constructs a query string from a pair (e.g.: `makeQuery animal cat` ==
 -- | `?animal=cat`).
 makeQuery :: String -> String -> Query
-makeQuery key = Query <<< singleton <<< Tuple key <<< Just
-
--- | Constructs a query string from a single string (e.g.: `makeQuery' hungry` ==
--- | `?hungry`).
-makeQuery' :: String -> Query
-makeQuery' = Query <<< singleton <<< flip Tuple Nothing
-
--- | Kinda-sorta like a Monoid over Query; combines two queries (e.q.: `
--- | joinQuery (?animal=cat) (?hungry)` == `?hungry&animal=cat`).
-joinQuery :: Query -> Query -> Query
-joinQuery (Query l1) (Query l2) = Query (l1 <> l2)
+makeQuery key value = Query.fromString $ key <> "=" <> value
 
 -- | Constructs a 'BasicAuth' from two strings. The same as the constructor,
 -- | only it wraps the strings in `Just` first.
@@ -234,8 +215,8 @@ setPassword :: String -> Auth -> Auth
 setPassword password (BasicAuth u _) = BasicAuth u (Just password)
 
 setProtocol :: Scheme -> Request -> Request
-setProtocol protocol (Request r@{ uri: (URI uriScheme h q f) }) =
-  Request r { uri = URI (Just protocol) h q f }
+setProtocol protocol (Request r@{ uri: (URI _uriScheme h q f) }) =
+  Request r { uri = URI protocol h q f }
 
 setHostname :: Host -> Request -> Request
 setHostname
@@ -243,14 +224,14 @@ setHostname
   ( Request
       r@
         { uri:
-            ( URI s (HierarchicalPart (Just (Authority u [ (Tuple _ p) ])) u') q
+            ( URI s (HierarchicalPartAuth (Authority u [ (Tuple _ p) ]) u') q
                 f
             )
         }
   ) =
   Request r
     { uri = URI s
-        (HierarchicalPart (Just (Authority u [ (Tuple hostname p) ])) u')
+        (HierarchicalPartAuth (Authority u [ (Tuple hostname p) ]) u')
         q
         f
     }
@@ -262,25 +243,25 @@ setPort
   ( Request
       r@
         { uri:
-            ( URI s (HierarchicalPart (Just (Authority u [ (Tuple h _) ])) u') q
+            ( URI s (HierarchicalPartAuth (Authority u [ (Tuple h _) ]) u') q
                 f
             )
         }
   ) =
   Request r
     { uri = URI s
-        (HierarchicalPart (Just (Authority u [ (Tuple h (Just port)) ])) u')
+        (HierarchicalPartAuth (Authority u [ (Tuple h (Just port)) ]) u')
         q
         f
     }
 setPort _ r = r
 
-modifyPath :: (URIPathAbs -> URIPathAbs) -> Request -> Request
-modifyPath fn (Request r@{ uri: (URI s (HierarchicalPart a (Just u)) q f) }) =
-  Request r { uri = URI s (HierarchicalPart a (Just $ fn u)) q f }
+modifyPath :: (Either AbsDir AbsFile -> Either AbsDir AbsFile) -> Request -> Request
+modifyPath fn (Request r@{ uri: (URI s (HierarchicalPartAuth a (Just u)) q f) }) =
+  Request r { uri = URI s (HierarchicalPartAuth a (Just $ fn u)) q f }
 modifyPath _ r = r
 
-setPath :: URIPathAbs -> Request -> Request
+setPath :: Either AbsDir AbsFile -> Request -> Request
 setPath = modifyPath <<< const
 
 modifyQuery :: (Query -> Query) -> Request -> Request
@@ -299,7 +280,7 @@ modifyFragment _ r = r
 setFragment :: Fragment -> Request -> Request
 setFragment = modifyFragment <<< const
 
-setURI :: URI -> Request -> Request
+setURI :: URI' -> Request -> Request
 setURI uri (Request r) = Request r { uri = uri }
 
 setMethod :: Method -> Request -> Request
@@ -322,24 +303,33 @@ setTimeout timeout (Request r) = Request r { timeout = Just timeout }
 
 -- | Constructs a 'Request' from a 'URI'. The request has all of the values of
 -- | 'defRequest', with the URI set to the passed parameter.
-uriToRequest' :: URI -> Request
+uriToRequest' :: URI' -> Request
 uriToRequest' uri = Request defRequest { uri = uri }
+
+uriParser :: Parser String URI'
+uriParser =
+  parser
+    { parseFragment: pure
+    , parseHierPath: pure
+    , parseHosts: many $ Tuple <$> Host.parser <*> optionMaybe Port.parser
+    , parsePath: (\p -> pure $ (Left <$> parseAbsDir posixParser p) <|> (Right <$> parseAbsFile posixParser p)) <<< Path.print
+    , parseQuery: pure
+    , parseUserInfo: pure
+    }
 
 -- | Constructs a 'Request' from a uri string. The request has all of the
 -- | values of 'defRequest', with the URI set to the passed parameter. If the
 -- | uri string could not be parsed, the parsing error is thrown.
 uriToRequest :: forall m. MonadError Error m => String -> m Request
-uriToRequest = parse >>>
-  either (extractErrorMessage >>> error >>> throwError)
+uriToRequest = flip runParser uriParser >>>
+  either (parseErrorMessage >>> error >>> throwError)
     (uriToRequest' >>> pure)
-  where
-  extractErrorMessage (ParseError msg) = msg
 
 -- | Constructs a 'Request' from a uri string. The request has all of the
 -- | values of 'defRequest', with the URI set to the passed parameter. If the
 -- | uri string could not be parsed, `Nothing` is returned.
 uriToRequest'' :: String -> Maybe Request
-uriToRequest'' = parse >>> either (const Nothing) (uriToRequest' >>> pure)
+uriToRequest'' = flip runParser uriParser >>> either (const Nothing) (uriToRequest' >>> pure)
 
 -- | Constructs a 'Request' from a uri string. The request has all of the
 -- | values of 'defRequest', with the URI set to the passed parameter, and the
